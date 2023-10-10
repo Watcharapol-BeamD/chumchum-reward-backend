@@ -75,7 +75,7 @@ const getIsRegister = async (req, res) => {
     if (existingUserCount>0) {
       res.status(200).json({ isRegister: true });
     } else {
-      res.status(401).json({ isRegister: false });
+      res.status(200).json({ isRegister: false });
     }
   } catch (err) {
     console.error(err);
