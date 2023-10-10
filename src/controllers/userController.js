@@ -12,10 +12,43 @@ const getAllUser = async (req, res) => {
   }
 };
 
-const getRegister  =async(req,res)=>{
-  const id = req.params.user_id;
-  const
-}
+const getRegister = async (req, res) => {
+  const { user_id, retailer_name, bplus_code, mobile_number } = req.body;
+  console.log(req.body);
+
+  try {
+    // Check if the user already exists in the database
+    const userExistsResult = await pool.query(queries.getCheckUserExist, [
+      user_id,
+    ]);
+
+    const existingUserCount = userExistsResult.rows[0].count;
+    if (existingUserCount > 0) {
+      return res
+        .status(400)
+        .json({ msg: "user already register", isRegisterPass: false });
+    }
+
+    // const encryptPassword = await bcrypt.hash(password, saltRounds);
+
+    // Insert the new user into the database
+    await pool.query(queries.registerNewUser, [
+      user_id,
+      retailer_name,
+      bplus_code,
+      mobile_number,
+    ]);
+
+    res
+      .status(201)
+      .json({ msg: "Registration successful", isRegisterPass: true });
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .json({ msg: "An error occurred while registering the user" });
+  }
+};
 
 const getUserById = async (req, res) => {
   const id = req.body.id;
@@ -30,7 +63,29 @@ const getUserById = async (req, res) => {
   }
 };
 
+const getIsRegister = async (req, res) => {
+  const { user_id } = req.body;
+
+  try {
+    // Check if the user already exists in the database
+    const userExistsResult = await pool.query(queries.getCheckUserExist, [
+      user_id,
+    ]);
+    const existingUserCount = userExistsResult.rows[0].count;
+    if (existingUserCount>0) {
+      res.status(200).json({ isRegister: true });
+    } else {
+      res.status(401).json({ isRegister: false });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("An error occurred while processing your request.");
+  }
+};
+
 module.exports = {
   getAllUser,
   getUserById,
+  getRegister,
+  getIsRegister,
 };
