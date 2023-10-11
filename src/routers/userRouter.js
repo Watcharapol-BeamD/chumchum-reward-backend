@@ -9,5 +9,5 @@ router.get("/", userController.getAllUser);
 //post request
 router.post("/register", userController.getRegister);
 router.post("/is_register", userController.getIsRegister);
-
+router.post("/redeem_reward", userController.getRedeemReward);
 module.exports = router;

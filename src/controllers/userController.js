@@ -65,14 +65,13 @@ const getUserById = async (req, res) => {
 
 const getIsRegister = async (req, res) => {
   const { user_id } = req.body;
-
   try {
     // Check if the user already exists in the database
     const userExistsResult = await pool.query(queries.getCheckUserExist, [
       user_id,
     ]);
     const existingUserCount = userExistsResult.rows[0].count;
-    if (existingUserCount>0) {
+    if (existingUserCount > 0) {
       res.status(200).json({ isRegister: true });
     } else {
       res.status(200).json({ isRegister: false });
@@ -83,9 +82,36 @@ const getIsRegister = async (req, res) => {
   }
 };
 
+const getRedeemReward = async (req, res) => {
+  const { user_id, reward_name, quantity, timestamp } = req.body;
+  try {
+    // Check if the user already exists in the database
+    const userExistsResult = await pool.query(queries.getCheckUserExist, [
+      user_id,
+    ]);
+    const existingUserCount = userExistsResult.rows[0].count;
+    if (existingUserCount > 0) {
+      // Insert the redeem reward into the database.
+      await pool.query(queries.keepRewardToHistory, [
+        user_id,
+        reward_name,
+        quantity,
+        timestamp,
+      ]);
+      res.status(201).json({ msg: "redeem successful" });
+    }else{
+      res.status(404).json({ msg: "Redemption Failed: User Not Found" });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("An error occurred while processing your request.");
+  }
+};
+
 module.exports = {
   getAllUser,
   getUserById,
   getRegister,
   getIsRegister,
+  getRedeemReward,
 };
