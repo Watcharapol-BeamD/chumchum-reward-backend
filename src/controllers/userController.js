@@ -1,7 +1,10 @@
 require("dotenv").config();
+
 const pool = require("../../db");
 const queries = require("../queries/queries.js");
 const client = require("../services/lineUtils");
+const template = require("./../lineMessageTemplates/template");
+
 const getAllUser = async (req, res) => {
   try {
     const results = await pool.query(queries.getAllUser);
@@ -99,15 +102,17 @@ const getRedeemReward = async (req, res) => {
         quantity,
         timestamp,
       ]);
-      client.pushMessage(user_id,[
+ 
+      //push line message
+      client.pushMessage(user_id, [
+        // template.replyRedeemReward,
         {
             "type": "text",
             "text": "ขอบคุณที่แลกของ"
         }
-   
-    ])
+      ]);
+
       res.status(201).json({ msg: "redeem successful" });
-      
     } else {
       res.status(404).json({ msg: "Redemption Failed: User Not Found" });
     }

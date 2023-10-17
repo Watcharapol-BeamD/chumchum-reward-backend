@@ -24,6 +24,11 @@ const config = {
 //     });
 // });
 
+
+
 const client = new line.Client(config);
+
+
+
 
 module.exports= client
