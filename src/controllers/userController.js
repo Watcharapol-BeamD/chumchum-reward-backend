@@ -1,7 +1,7 @@
 require("dotenv").config();
 const pool = require("../../db");
 const queries = require("../queries/queries.js");
-
+const client = require("../services/lineUtils");
 const getAllUser = async (req, res) => {
   try {
     const results = await pool.query(queries.getAllUser);
@@ -84,6 +84,7 @@ const getIsRegister = async (req, res) => {
 
 const getRedeemReward = async (req, res) => {
   const { user_id, reward_name, quantity, timestamp } = req.body;
+  console.log(req.body);
   try {
     // Check if the user already exists in the database
     const userExistsResult = await pool.query(queries.getCheckUserExist, [
@@ -98,8 +99,16 @@ const getRedeemReward = async (req, res) => {
         quantity,
         timestamp,
       ]);
+      client.pushMessage(user_id,[
+        {
+            "type": "text",
+            "text": "ขอบคุณที่แลกของ"
+        }
+   
+    ])
       res.status(201).json({ msg: "redeem successful" });
-    }else{
+      
+    } else {
       res.status(404).json({ msg: "Redemption Failed: User Not Found" });
     }
   } catch (err) {
