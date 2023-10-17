@@ -105,11 +105,11 @@ const getRedeemReward = async (req, res) => {
  
       //push line message
       client.pushMessage(user_id, [
-        // template.replyRedeemReward,
-        {
-            "type": "text",
-            "text": "ขอบคุณที่แลกของ"
-        }
+       template.replyRedeemRewardV2,
+        // {
+        //     "type": "text",
+        //     "text": "ขอบคุณที่แลกของ"
+        // }
       ]);
 
       res.status(201).json({ msg: "redeem successful" });

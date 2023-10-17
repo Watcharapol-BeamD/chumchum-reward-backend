@@ -17,8 +17,8 @@ app.use(express.urlencoded({ extended: false })); //อาจจะไม่ต�
 
 app.use("/api/v1/user", userRouter);
 
-//-------------------------------
-// Line set up
+//--------------Line set up-----------------
+ 
 
 const lineConfig = {
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
