@@ -1,6 +1,6 @@
 const replyRedeemReward = {
   type: "flex",
-  altText: "สวัสดี",
+  altText: "คุณได้ทำการแลกของรางวัลเรียบร้อย",
   contents: {
     type: "bubble",
     hero: {
@@ -156,7 +156,7 @@ const replyRedeemReward = {
 };
 const replyRedeemRewardV2 = {
   type: "flex",
-  altText: "สวัสดี",
+  altText: "คุณได้ทำการแลกของรางวัลเรียบร้อย",
   contents:  {
     "type": "bubble",
     "header": {
