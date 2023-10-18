@@ -154,6 +154,7 @@ const replyRedeemReward = {
     },
   },
 };
+
 const replyRedeemRewardV2 = {
   type: "flex",
   altText: "คุณได้ทำการแลกของรางวัลเรียบร้อย",
