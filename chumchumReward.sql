@@ -77,7 +77,7 @@ VALUES (CURRENT_TIMESTAMP, 'Redeemed a reward', '1', 'U0000001', 'RW0000001')
 SELECT * FROM Users;
 SELECT * FROM Rewards;
 SELECT * FROM redeem_history;
-SELECT * FROM redeem_history,users WHERE redeem_history.fk_user_id = users ;
+SELECT * FROM redeem_history,users WHERE redeem_history.fk_user_id = 'U0000001' ;
 SELECT reward_id,quantity FROM Rewards WHERE reward_id = 'RW0000001';
 
 ------- Select By user_id ----------

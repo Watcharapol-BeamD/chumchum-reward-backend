@@ -3,6 +3,7 @@ const app = express();
 const port = 5000;
 const cors = require("cors");
 const userRouter = require("./src/routers/userRouter");
+ const rewardRouter = require("./src/routers/rewardRouter")
 // const { config } = require("dotenv");
 require("dotenv").config();
 const line = require("@line/bot-sdk");
@@ -16,7 +17,7 @@ app.use(express.urlencoded({ extended: false })); //อาจจะไม่ต�
 //{ origin: 'http://localhost:3000' }
 
 app.use("/api/v1/user", userRouter);
-
+app.use("/api/v1/reward",rewardRouter);
 //--------------Line set up-----------------
  
 
