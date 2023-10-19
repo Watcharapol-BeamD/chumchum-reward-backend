@@ -8,6 +8,7 @@ const registerNewUser =
 const keepRewardToHistory =
   "INSERT INTO redeemed_rewards (fk_user_id, reward_name, quantity, timestamp)VALUES ($1, $2, $3, $4)";
 
+// const getRetailerInfo  = "SELECT * FROM redeemed_rewards WHERE "
 
 // -------------------------------------------
 const getReward =  "SELECT * FROM Rewards;"

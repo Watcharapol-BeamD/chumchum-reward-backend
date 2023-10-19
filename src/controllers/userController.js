@@ -88,13 +88,19 @@ const getIsRegister = async (req, res) => {
   }
 };
 
+
+const getRetailerInfo = async (req,res)=>{
+try{
+  const retailerInfo = await pool.query()
+}catch{
+
+}
+
+}
+
 const getRedeemReward = async (req, res) => {
-
- 
-
-
-  const { user_id, reward_name, quantity, timestamp } = req.body;
-  // console.log(req.body);
+  const { user_id, reward_name, quantity, timestamp,retailer_name,bplus_code } = req.body;
+  console.log(req.body);
   try {
     // Check if the user already exists in the database
     const userExistsResult = await pool.query(queries.getCheckUserExist, [
@@ -109,8 +115,12 @@ const getRedeemReward = async (req, res) => {
         quantity,
         timestamp,
       ]);
-await sendEmail()
-   
+
+//------------get retailer name by user_id-----------------
+ 
+ 
+      await sendEmail(retailer_name,bplus_code,reward_name,timestamp);
+
       //push line message
       // client.pushMessage(user_id, [
       //  template.replyRedeemRewardV2,
@@ -128,9 +138,6 @@ await sendEmail()
     console.log(err);
     res.status(500).send("An error occurred while processing your request.");
   }
- 
-  
-
 };
 
 module.exports = {
