@@ -1,9 +1,12 @@
 require("dotenv").config();
+const nodemailer = require("nodemailer");
 
 const pool = require("../../db");
 const queries = require("../queries/queries.js");
+
 const client = require("../services/lineUtils");
 const template = require("./../lineMessageTemplates/template");
+const { sendEmail } = require("../services/emailService");
 
 const getAllUser = async (req, res) => {
   try {
@@ -86,8 +89,12 @@ const getIsRegister = async (req, res) => {
 };
 
 const getRedeemReward = async (req, res) => {
+
+ 
+
+
   const { user_id, reward_name, quantity, timestamp } = req.body;
-  console.log(req.body);
+  // console.log(req.body);
   try {
     // Check if the user already exists in the database
     const userExistsResult = await pool.query(queries.getCheckUserExist, [
@@ -102,15 +109,16 @@ const getRedeemReward = async (req, res) => {
         quantity,
         timestamp,
       ]);
- 
+await sendEmail()
+   
       //push line message
-      client.pushMessage(user_id, [
-       template.replyRedeemRewardV2,
-        // {
-        //     "type": "text",
-        //     "text": "ขอบคุณที่แลกของ"
-        // }
-      ]);
+      // client.pushMessage(user_id, [
+      //  template.replyRedeemRewardV2,
+      //   // {
+      //   //     "type": "text",
+      //   //     "text": "ขอบคุณที่แลกของ"
+      //   // }
+      // ]);
 
       res.status(201).json({ msg: "redeem successful" });
     } else {
@@ -120,6 +128,9 @@ const getRedeemReward = async (req, res) => {
     console.log(err);
     res.status(500).send("An error occurred while processing your request.");
   }
+ 
+  
+
 };
 
 module.exports = {
