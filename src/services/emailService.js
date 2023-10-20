@@ -1,7 +1,7 @@
 const nodemailer = require("nodemailer");
 
 const sendEmail = async (retailer_name,bplus_code,reward_name,timestamp ) => {
- 
+ console
   try {
     const transporter = nodemailer.createTransport({
       host: "gmail",
@@ -17,7 +17,8 @@ const sendEmail = async (retailer_name,bplus_code,reward_name,timestamp ) => {
 
     const message = {
       from: '"BewBew 👻" ',
-      to: "chumchumth@gmail.com,nuttapon.wongkongmunsakul@gtnexttech.com",
+      // to: "chumchumth@gmail.com,nuttapon.wongkongmunsakul@gtnexttech.com",
+      to:"bew15011@gmail.com",
       subject: "Reward Redemption",
       text: "Hello world?",
       html: `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -94,16 +95,7 @@ const sendEmail = async (retailer_name,bplus_code,reward_name,timestamp ) => {
                          </table></td>
                        </tr>
                      </table><!--[if mso]></td><td style="width:20px"></td><td style="width:360px" valign="top"><![endif]-->
-                     <table class="es-right" cellspacing="0" cellpadding="0" align="right" role="none" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:right">
-                       <tr>
-                        <td align="left" style="padding:0;Margin:0;width:360px">
-                         <table width="100%" cellspacing="0" cellpadding="0" role="none" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                           <tr>
-                            <td style="padding:0;Margin:0;display:none" align="center"></td>
-                           </tr>
-                         </table></td>
-                       </tr>
-                     </table><!--[if mso]></td></tr></table><![endif]--></td>
+                     
                    </tr>
                  </table></td>
                </tr>
@@ -129,13 +121,13 @@ const sendEmail = async (retailer_name,bplus_code,reward_name,timestamp ) => {
                         <td align="left" style="padding:0;Margin:0;width:258px">
                          <table style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-position:left top" width="100%" cellspacing="0" cellpadding="0" role="presentation">
                            <tr>
-                            <td class="es-m-txt-c" align="left" style="padding:0;Margin:0;padding-top:10px;padding-bottom:15px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:24px;color:#333333;font-size:16px">รหัสร้านค้า - ชื่อร้านค้า</p></td>
+                            <td class="es-m-txt-c" align="left" style="padding:0;Margin:0;padding-top:10px;padding-bottom:15px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:24px;color:#333333;font-size:16px">${bplus_code} - ${retailer_name}</p></td>
                            </tr>
                            <tr>
-                            <td class="es-m-txt-c" align="left" style="padding:0;Margin:0;padding-top:10px;padding-bottom:15px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:24px;color:#333333;font-size:16px">แลกรางวัล: Xiaomi air purifier</p></td>
+                            <td class="es-m-txt-c" align="left" style="padding:0;Margin:0;padding-top:10px;padding-bottom:15px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:24px;color:#333333;font-size:16px">แลกรางวัล: ${reward_name}</p></td>
                            </tr>
                            <tr>
-                            <td class="es-m-txt-c" align="left" style="padding:0;Margin:0;padding-top:10px;padding-bottom:15px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:24px;color:#333333;font-size:16px">วัน-เวลา :&nbsp;</p></td>
+                            <td class="es-m-txt-c" align="left" style="padding:0;Margin:0;padding-top:10px;padding-bottom:15px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:24px;color:#333333;font-size:16px">วัน-เวลา : ${timestamp}</p></td>
                            </tr>
                          </table></td>
                        </tr>
@@ -161,16 +153,7 @@ const sendEmail = async (retailer_name,bplus_code,reward_name,timestamp ) => {
                          </table></td>
                        </tr>
                      </table><!--[if mso]></td><td style="width:20px"></td><td style="width:270px" valign="top"><![endif]-->
-                     <table class="es-right" cellspacing="0" cellpadding="0" align="right" role="none" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:right">
-                       <tr>
-                        <td align="left" style="padding:0;Margin:0;width:270px">
-                         <table width="100%" cellspacing="0" cellpadding="0" role="none" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                           <tr>
-                            <td align="center" style="padding:0;Margin:0;display:none"></td>
-                           </tr>
-                         </table></td>
-                       </tr>
-                     </table><!--[if mso]></td></tr></table><![endif]--></td>
+                  
                    </tr>
                  </table></td>
                </tr>

@@ -18,9 +18,10 @@ app.use(express.urlencoded({ extended: false })); //อาจจะไม่ต�
 
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/reward",rewardRouter);
+
+
 //--------------Line set up-----------------
  
-
 const lineConfig = {
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
   channelSecret: process.env.LINE_CHANNEL_SECRET,

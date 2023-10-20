@@ -1,11 +1,8 @@
 require("dotenv").config();
-const nodemailer = require("nodemailer");
 
-const pool = require("../../db");
+const {pool} = require("../../db");
 const queries = require("../queries/queries.js");
 
-const client = require("../services/lineUtils");
-const template = require("./../lineMessageTemplates/template");
 const { sendEmail } = require("../services/emailService");
 
 const getAllUser = async (req, res) => {
@@ -44,7 +41,6 @@ const getRegister = async (req, res) => {
       bplus_code,
       mobile_number,
     ]);
-
     res
       .status(201)
       .json({ msg: "Registration successful", isRegisterPass: true });
