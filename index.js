@@ -27,27 +27,6 @@ const lineConfig = {
   channelSecret: process.env.LINE_CHANNEL_SECRET,
 };
 
-// create LINE SDK client
-// const client = new line.messagingApi.MessagingApiClient({
-//   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN
-// });
-
-// const client = new line.Client(lineConfig);
-
-// client.pushMessage("U1a12937aef17947c281f9d3e7cf857b7", [
-//   { type: "text", text: "สวัสดีจร้าาาา5556" },
-// ]);
-
-// app.post("/webhook", line.middleware(lineConfig), (req, res) => {
-//   res.end();
-//   // res.status(200).send("54444")
-
-//   Promise.all([req.body.events.map(handleEvents)])
-//   .then((result) =>  res.json(result)  );
-
-// });
-
-//-------------------------------
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

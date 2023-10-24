@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 const Pool = require("pg").Pool;
-const mysql = require("mysql2");
+const mysql = require("mysql2/promise");
 
  
 //Postgres Instance
