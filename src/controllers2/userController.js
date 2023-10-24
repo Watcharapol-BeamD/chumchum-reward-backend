@@ -1,7 +1,7 @@
 const { db } = require("../../db");
 const queries = require("../queries/queries2");
 
-const { sendEmail } = require("../services/emailService");
+ 
 
 const getAllUser = async (req, res) => {
   try {
