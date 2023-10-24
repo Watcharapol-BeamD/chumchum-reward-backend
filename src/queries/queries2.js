@@ -1,5 +1,5 @@
 const getAllUser = "SELECT * FROM Customers;";
-const registerNewUser =
+const registerNewCustomer =
   "INSERT INTO Customers (customer_id, retailer_name, bplus_code, phone_number)VALUES (?, ?, ?, ?)";
   
 const getCheckUserExist =
@@ -7,4 +7,4 @@ const getCheckUserExist =
 
 
 
-module.exports = { getAllUser, registerNewUser,getCheckUserExist };
+module.exports = { getAllUser, registerNewCustomer,getCheckUserExist };

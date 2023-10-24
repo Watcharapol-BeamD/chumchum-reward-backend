@@ -7,7 +7,7 @@ const userController = require("../controllers2/userController");
 router.get("/", userController.getAllUser);
  
 //post request
-router.post("/register", userController.getRegister);
+router.post("/register", userController.getRegisterNewCustomer);
 router.post("/is_register", userController.getIsRegister);
 // router.post("/redeem_reward", userController.getRedeemReward);
 

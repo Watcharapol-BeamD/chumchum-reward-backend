@@ -13,27 +13,27 @@ const getAllUser = async (req, res) => {
   }
 };
 
-const getRegister = async (req, res) => {
+const getRegisterNewCustomer = async (req, res) => {
   const { customer_id, retailer_name, bplus_code, phone_number } = req.body;
   console.log(req.body);
 
   try {
     // Check if the user already exists in the database
-    // const userExistsResult = await db.query(queries.getCheckUserExist, [
-    //   customer_id,
-    // ]);
+    const userExistsResult = await db.query(queries.getCheckUserExist, [
+      customer_id,
+    ]);
 
-    // const existingUserCount = userExistsResult.rows[0].count;
-    // if (existingUserCount > 0) {
-    //   return res
-    //     .status(400)
-    //     .json({ msg: "user already register", isRegisterPass: false });
-    // }
+    const existingUserCount = userExistsResult[0][0].count;
+    if (existingUserCount > 0) {
+      return res
+        .status(400)
+        .json({ msg: "This user already register", isRegisterPass: false });
+    }
 
     // const encryptPassword = await bcrypt.hash(password, saltRounds);
 
     // Insert the new user into the database
-    await db.query(queries.registerNewUser, [
+    await db.query(queries.registerNewCustomer, [
       customer_id,
       retailer_name,
       bplus_code,
@@ -57,8 +57,8 @@ const getIsRegister = async (req, res) => {
     const userExistsResult = await db.query(queries.getCheckUserExist, [
       customer_id,
     ]);
-    const existingUserCount = userExistsResult[0][0].count
- 
+    const existingUserCount = userExistsResult[0][0].count;
+
     if (existingUserCount > 0) {
       res.status(200).json({ isRegister: true });
     } else {
@@ -72,6 +72,6 @@ const getIsRegister = async (req, res) => {
 
 module.exports = {
   getAllUser,
-  getRegister,
+  getRegisterNewCustomer,
   getIsRegister,
 };
