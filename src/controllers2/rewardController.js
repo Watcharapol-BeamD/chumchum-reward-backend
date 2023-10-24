@@ -9,14 +9,15 @@ const { sendEmail } = require("../services/emailService");
 //-------------Reward Controller--------------------------
 
 const getRedeemReward = async (req, res) => {
+  console.log("5555555555")
   const {
     customer_id,
     reward_id,
     quantity,
     points_used,
-    bplus_code,
-    retailer_name,
-    reward_name,
+    reward_name,//ใช้แค่ตอนส่ง mail
+    bplus_code,//ใช้แค่ตอนส่ง mail
+    retailer_name,//ใช้แค่ตอนส่ง mail
   } = req.body;
 
   // console.log(req.body);
@@ -44,17 +45,16 @@ const getRedeemReward = async (req, res) => {
         queries.getRedeemRewardTimestamp
       );
       const redeem_timestamp = redeem_timestamp_result[0][0].redeem_timestamp;
- 
+
       // await sendEmail(retailer_name, bplus_code, reward_name, redeem_timestamp);
 
-  
-      
       //push line message
+      //customer_id ต้องเป็นของ line
       // client.pushMessage(customer_id, [
-      // //  template.replyRedeemRewardV2,
+      //  template.replyRedeemRewardV2,
       //   {
       //       "type": "text",
-      //       "text": "ขอบคุณที่แลกของ"
+      //       "text": "ขอบคุณที่แลกของลางวัล"
       //   }
       // ]);
 
