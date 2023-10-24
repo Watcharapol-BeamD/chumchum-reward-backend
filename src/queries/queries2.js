@@ -1,5 +1,10 @@
 const getAllUser = "SELECT * FROM Customers;";
 const registerNewUser =
-  "INSERT INTO users (user_id, retailer_name, bplus_code, mobile_number)VALUES ($1, $2, $3, $4)";
+  "INSERT INTO Customers (customer_id, retailer_name, bplus_code, phone_number)VALUES (?, ?, ?, ?)";
+  
+const getCheckUserExist =
+  "SELECT COUNT(*) AS count FROM Customers WHERE Customer_id =?";
 
-module.exports = {getAllUser};
+
+
+module.exports = { getAllUser, registerNewUser,getCheckUserExist };
