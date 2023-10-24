@@ -19,7 +19,7 @@ const getRedeemReward = async (req, res) => {
     reward_name,
   } = req.body;
 
-  console.log(req.body);
+  // console.log(req.body);
   try {
     // Check if the user already exists in the database
     const userExistsResult = await db.query(queries.getCheckUserExist, [
@@ -45,17 +45,17 @@ const getRedeemReward = async (req, res) => {
       );
       const redeem_timestamp = redeem_timestamp_result[0][0].redeem_timestamp;
  
-      await sendEmail(retailer_name, bplus_code, reward_name, redeem_timestamp);
+      // await sendEmail(retailer_name, bplus_code, reward_name, redeem_timestamp);
 
-      console.log(redeem_timestamp)
+  
       
       //push line message
       // client.pushMessage(customer_id, [
-      //  template.replyRedeemRewardV2,
-      //   // {
-      //   //     "type": "text",
-      //   //     "text": "ขอบคุณที่แลกของ"
-      //   // }
+      // //  template.replyRedeemRewardV2,
+      //   {
+      //       "type": "text",
+      //       "text": "ขอบคุณที่แลกของ"
+      //   }
       // ]);
 
       res.status(201).json({ msg: "redeem successful" });
