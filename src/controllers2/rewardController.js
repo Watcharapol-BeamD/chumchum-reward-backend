@@ -9,10 +9,24 @@ const { sendEmail } = require("../services/emailService");
 //-------------Reward Controller--------------------------
 
 const getReward = async (req, res) => {
-  const results = await db.query(queries.getReward);
- 
   try {
+    const results = await db.query(queries.getReward);
     res.status(200).json(results[0]);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("An error occurred while processing your request.");
+  }
+};
+
+const getRewardById = async (req, res) => {
+  const { reward_id } = req.params;
+ 
+
+  try {
+    const results = await db.query(queries.getRewardById, [reward_id]);
+    console.log(results[0]);
+    res.status(200).json(results[0]);
+    
   } catch (err) {
     console.log(err);
     res.status(500).send("An error occurred while processing your request.");
@@ -104,4 +118,5 @@ module.exports = {
   getSendEmail,
   getRemainReward,
   getReward,
+  getRewardById,
 };
