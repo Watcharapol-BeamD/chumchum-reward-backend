@@ -20,13 +20,11 @@ const getReward = async (req, res) => {
 
 const getRewardById = async (req, res) => {
   const { reward_id } = req.params;
- 
 
   try {
     const results = await db.query(queries.getRewardById, [reward_id]);
-    console.log(results[0]);
-    res.status(200).json(results[0]);
-    
+    const reward = results[0][0];
+    res.status(200).json(reward);
   } catch (err) {
     console.log(err);
     res.status(500).send("An error occurred while processing your request.");
