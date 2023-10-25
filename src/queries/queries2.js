@@ -9,6 +9,7 @@ const keepRewardToHistory = `INSERT INTO Redeem_Histories (fk_customer_id,fk_rew
 const getRedeemRewardTimestamp = `SELECT redeem_timestamp FROM Redeem_Histories`;
 const getRewardRemainQuantity =
   "SELECT reward_id,quantity FROM Rewards WHERE reward_id = ?;";
+const getReward = `SELECT * FROM Rewards`;
 
 module.exports = {
   getAllUser,
@@ -17,4 +18,5 @@ module.exports = {
   keepRewardToHistory,
   getRedeemRewardTimestamp,
   getRewardRemainQuantity,
+  getReward,
 };

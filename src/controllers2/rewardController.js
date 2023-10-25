@@ -8,16 +8,26 @@ const { sendEmail } = require("../services/emailService");
 
 //-------------Reward Controller--------------------------
 
+const getReward = async (req, res) => {
+  const results = await db.query(queries.getReward);
+ 
+  try {
+    res.status(200).json(results[0]);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("An error occurred while processing your request.");
+  }
+};
+
 const getRedeemReward = async (req, res) => {
-  console.log("5555555555")
   const {
     customer_id,
     reward_id,
     quantity,
     points_used,
-    reward_name,//ใช้แค่ตอนส่ง mail
-    bplus_code,//ใช้แค่ตอนส่ง mail
-    retailer_name,//ใช้แค่ตอนส่ง mail
+    reward_name, //ใช้แค่ตอนส่ง mail
+    bplus_code, //ใช้แค่ตอนส่ง mail
+    retailer_name, //ใช้แค่ตอนส่ง mail
   } = req.body;
 
   // console.log(req.body);
@@ -93,4 +103,5 @@ module.exports = {
   getRedeemReward,
   getSendEmail,
   getRemainReward,
+  getReward,
 };
