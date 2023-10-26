@@ -80,9 +80,37 @@ const getIsRegister = async (req, res) => {
   }
 };
 
+const updateCustomerInformation = async (req, res) => {
+  const { province, district, sub_district, post_code, address, customer_id } =
+    req.body;
+  try {
+    const userExistsResult = await db.query(queries.getCheckUserExist, [
+      customer_id,
+    ]);
+    const existingUserCount = userExistsResult[0][0].count;
+    if (existingUserCount > 0) {
+      await db.query(queries.updateCustomerInfo, [
+        province,
+        district,
+        sub_district,
+        post_code,
+        address,
+        customer_id,
+      ]);
+      res.status(200).json({ msg: "Update customer information successful." });
+    } else {
+      res.status(404).json({ msg: "User not found." });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("An error occurred while processing your request.");
+  }
+};
+
 module.exports = {
   getAllUser,
   getRegisterNewCustomer,
   getIsRegister,
   getCustomerById,
+  updateCustomerInformation,
 };

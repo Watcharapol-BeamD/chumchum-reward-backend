@@ -12,6 +12,8 @@ const getRewardRemainQuantity =
   "SELECT reward_id,quantity FROM Rewards WHERE reward_id = ?;";
 const getReward = `SELECT * FROM Rewards`;
 const getRewardById = `SELECT * FROM Rewards WHERE reward_id = ?`;
+const updateCustomerInfo = `UPDATE Customers SET province = ?, district=?,sub_district=?, post_code=?,address=? WHERE customer_id = ?;`;
+
 
 module.exports = {
   getAllUser,
@@ -23,4 +25,5 @@ module.exports = {
   getReward,
   getRewardById,
   getCustomerById,
+  updateCustomerInfo,
 };
