@@ -60,6 +60,9 @@ const getRedeemReward = async (req, res) => {
         points_used,
       ]);
 
+      // ------------------- Decrease point--------------------------
+      db.query(queries.decreasePoint, [points_used, customer_id]);
+
       //------------get retailer name by customer_id-----------------
 
       // get timestamp from database before send email
@@ -82,7 +85,12 @@ const getRedeemReward = async (req, res) => {
 
       res.status(201).json({ msg: "redeem successful", isRedeemSuccess: true });
     } else {
-      res.status(404).json({ msg: "Redemption Failed: User Not Found" ,isRedeemSuccess: false});
+      res
+        .status(404)
+        .json({
+          msg: "Redemption Failed: User Not Found",
+          isRedeemSuccess: false,
+        });
     }
   } catch (err) {
     console.log(err);
