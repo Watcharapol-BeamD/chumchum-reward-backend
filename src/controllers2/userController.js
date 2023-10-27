@@ -1,5 +1,9 @@
 const { db } = require("../../db");
 const queries = require("../queries/queries2");
+const {
+  jwtAccessTokenGenerate,
+  jwtRefreshTokenGenerate,
+} = require("../services/jwtUtils");
 
 const getAllUser = async (req, res) => {
   try {
@@ -42,16 +46,25 @@ const getRegisterNewCustomer = async (req, res) => {
 
     // const encryptPassword = await bcrypt.hash(password, saltRounds);
 
+    // Generate a JWT token
+    const access_token = jwtAccessTokenGenerate(customer_id);
+    const refresh_token = jwtRefreshTokenGenerate(customer_id);
+ 
     // Insert the new user into the database
     await db.query(queries.registerNewCustomer, [
       customer_id,
       retailer_name,
       bplus_code,
       phone_number,
+      refresh_token,
     ]);
-    res
-      .status(201)
-      .json({ msg: "Registration successful", isRegisterPass: true });
+
+    res.status(201).json({
+      msg: "Registration successful",
+      isRegisterPass: true,
+      access_token: access_token,
+      refresh_token: refresh_token,
+    });
   } catch (err) {
     console.error(err);
     res
@@ -97,9 +110,12 @@ const updateCustomerInformation = async (req, res) => {
         address,
         customer_id,
       ]);
-      res.status(200).json({ msg: "Update customer information successful.",isFinish:true });
+      res.status(200).json({
+        msg: "Update customer information successful.",
+        isFinish: true,
+      });
     } else {
-      res.status(404).json({ msg: "User not found." ,isFinish:false});
+      res.status(404).json({ msg: "User not found.", isFinish: false });
     }
   } catch (err) {
     console.error(err);

@@ -1,7 +1,7 @@
 const getAllUser = "SELECT * FROM Customers;";
 const getCustomerById = "SELECT * FROM Customers WHERE customer_id = ?";
 const registerNewCustomer =
-  "INSERT INTO Customers (customer_id, retailer_name, bplus_code, phone_number)VALUES (?, ?, ?, ?)";
+  "INSERT INTO Customers (customer_id, retailer_name, bplus_code, phone_number,refresh_token)VALUES (?, ?, ?, ?,?)";
 
 const getCheckUserExist =
   "SELECT COUNT(*) AS count FROM Customers WHERE Customer_id =?";
@@ -15,6 +15,7 @@ const getRewardById = `SELECT * FROM Rewards WHERE reward_id = ?`;
 const updateCustomerInfo = `UPDATE Customers SET province = ?, district=?,sub_district=?, post_code=?,address=? WHERE customer_id = ?;`;
 const increasePoint = `UPDATE Customers SET points = points + ? WHERE customer_id = ?;`;
 const decreasePoint = `UPDATE Customers SET points = points - ? WHERE customer_id = ?;`;
+const addNewRefreshToken = `UPDATE Customers SET refresh_token = ? WHERE customer_id = ?;`;
 
 module.exports = {
   getAllUser,
@@ -29,4 +30,5 @@ module.exports = {
   updateCustomerInfo,
   increasePoint,
   decreasePoint,
+  addNewRefreshToken,
 };
