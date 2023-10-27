@@ -97,9 +97,9 @@ const updateCustomerInformation = async (req, res) => {
         address,
         customer_id,
       ]);
-      res.status(200).json({ msg: "Update customer information successful." });
+      res.status(200).json({ msg: "Update customer information successful.",isFinish:true });
     } else {
-      res.status(404).json({ msg: "User not found." });
+      res.status(404).json({ msg: "User not found." ,isFinish:false});
     }
   } catch (err) {
     console.error(err);

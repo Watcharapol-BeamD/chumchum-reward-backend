@@ -80,9 +80,9 @@ const getRedeemReward = async (req, res) => {
       //   }
       // ]);
 
-      res.status(201).json({ msg: "redeem successful" });
+      res.status(201).json({ msg: "redeem successful", isRedeemSuccess: true });
     } else {
-      res.status(404).json({ msg: "Redemption Failed: User Not Found" });
+      res.status(404).json({ msg: "Redemption Failed: User Not Found" ,isRedeemSuccess: false});
     }
   } catch (err) {
     console.log(err);
