@@ -66,7 +66,7 @@ const getRedeemReward = async (req, res) => {
 
       //------------get retailer name by customer_id-----------------
 
-      // get timestamp from database before send email
+      //------------get timestamp from database before send email----
       const redeem_timestamp_result = await db.query(
         queries.getRedeemRewardTimestamp,
         [customer_id]
@@ -83,13 +83,13 @@ const getRedeemReward = async (req, res) => {
 
       //-----------------------send email-----------------------
 
-      // await sendEmail(
-      //   retailer_name,
-      //   bplus_code,
-      //   reward_name,
-      //   redeem_timestamp,
-      //   reward_image
-      // );
+      await sendEmail(
+        retailer_name,
+        bplus_code,
+        reward_name,
+        redeem_timestamp,
+        reward_image
+      );
 
       //------------------------push line message----------------
       //customer_id ต้องเป็นของ line
