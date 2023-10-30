@@ -97,7 +97,7 @@ const sendLineMessage = async (customer_id,reward_image,reward_name) => {
     },
     {
       type: "text",
-      text: "ขอบคุณที่แลกของลางวัล",
+      text: "ขอบคุณที่แลกของรางวัล",
     },
   ]);
 };
