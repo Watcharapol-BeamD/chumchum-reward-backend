@@ -1,12 +1,16 @@
 const nodemailer = require("nodemailer");
 
-const sendEmail = async (retailer_name, bplus_code, reward_name, timestamp,reward_image) => {
-  console.log(reward_image);
-  console.log("55555555555");
+const sendEmail = async (
+  retailer_name,
+  bplus_code,
+  reward_name,
+  timestamp,
+  reward_image
+) => {
   try {
     const transporter = nodemailer.createTransport({
       host: "gmail",
-      service:'gmail',
+      service: "gmail",
       port: 465,
       secure: true,
       auth: {
@@ -33,7 +37,7 @@ const sendEmail = async (retailer_name, bplus_code, reward_name, timestamp,rewar
       from: '"ChumChum 👻" ',
       // to: "chumchumth@gmail.com,nuttapon.wongkongmunsakul@gtnexttech.com,bew_so555@hotmail.com,watcharapol.numpaya@gtnexttech.com",
       // to:"bew15011@gmail.com",
-      to:"chumchumth@gmail.com",
+      to: "chumchumth@gmail.com",
       subject: "Reward Redemption",
       text: "Hello world?",
       html: `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

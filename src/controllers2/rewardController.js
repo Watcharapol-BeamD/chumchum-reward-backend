@@ -5,6 +5,7 @@ const queries = require("../queries/queries2.js");
 const client = require("../services/lineUtils");
 const template = require("./../lineMessageTemplates/template");
 const { sendEmail } = require("../services/emailService");
+const {sendLineMessage} = require('../services/lineMessageService,js')
 
 //-------------Reward Controller--------------------------
 
@@ -78,19 +79,19 @@ const getRedeemReward = async (req, res) => {
         reward_id,
       ]);
       const reward_image = reward_image_result[0][0].reward_image;
-      console.log(reward_image);
+  
 
       //-----------------------send email-----------------------
 
-      await sendEmail(
-        retailer_name,
-        bplus_code,
-        reward_name,
-        redeem_timestamp,
-        reward_image
-      );
+      // await sendEmail(
+      //   retailer_name,
+      //   bplus_code,
+      //   reward_name,
+      //   redeem_timestamp,
+      //   reward_image
+      // );
 
-      //push line message
+      //------------------------push line message----------------
       //customer_id ต้องเป็นของ line
       // client.pushMessage(customer_id, [
       //  template.replyRedeemRewardV2,
@@ -99,6 +100,8 @@ const getRedeemReward = async (req, res) => {
       //       "text": "ขอบคุณที่แลกของลางวัล"
       //   }
       // ]);
+      
+    await sendLineMessage(customer_id,reward_image )
 
       res.status(201).json({ msg: "redeem successful", isRedeemSuccess: true });
     } else {
