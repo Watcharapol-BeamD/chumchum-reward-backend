@@ -1,6 +1,6 @@
 const client = require("./lineUtils");
 
-const sendLineMessage = async (customer_id,reward_image) => {
+const sendLineMessage = async (customer_id,reward_image,reward_name) => {
   //push line message
   //customer_id ต้องเป็นของ line
   await client.pushMessage(customer_id, [
@@ -73,7 +73,7 @@ const sendLineMessage = async (customer_id,reward_image) => {
                           wrap: true,
                           margin: "lg",
                           color: "#ffffffde",
-                          text: "ยินดีด้วยคุณได้รับ : ESUN Mi Water Purifier 600G - เครื่องกรองน้ำอัจฉริยะ 600G (รุ่นตั้งพื้น)",
+                          text:`ยินดีด้วยคุณได้รับ : ${reward_name}`,
                         },
                       ],
                     },

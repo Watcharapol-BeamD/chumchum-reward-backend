@@ -101,7 +101,7 @@ const getRedeemReward = async (req, res) => {
       //   }
       // ]);
       
-    await sendLineMessage(customer_id,reward_image )
+    await sendLineMessage(customer_id,reward_image,reward_name)
 
       res.status(201).json({ msg: "redeem successful", isRedeemSuccess: true });
     } else {
