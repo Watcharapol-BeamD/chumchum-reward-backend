@@ -1,8 +1,8 @@
 const nodemailer = require("nodemailer");
 
-const sendEmail = async (retailer_name,bplus_code,reward_name,timestamp ) => {
-  console.log(retailer_name)
-  console.log("55555555555")
+const sendEmail = async (retailer_name, bplus_code, reward_name, timestamp,reward_image) => {
+  console.log(reward_image);
+  console.log("55555555555");
   try {
     const transporter = nodemailer.createTransport({
       host: "gmail",
@@ -16,10 +16,24 @@ const sendEmail = async (retailer_name,bplus_code,reward_name,timestamp ) => {
       },
     });
 
+    // const transporter = nodemailer.createTransport({
+    //   host: "chumchumreward.com",
+    //   // service:'gmail',
+    //   port: 465,
+    //   secure: true,
+    //   sendMail:true,
+    //   auth: {
+    //     // TODO: replace `user` and `pass` values from <https://forwardemail.net>
+    //     user: "support@chumchumreward.com",
+    //     pass: "Hlcxk#!YnzYh",
+    //   },
+    // });
+
     const message = {
-      from: '"BewBew 👻" ',
-      to: "chumchumth@gmail.com,nuttapon.wongkongmunsakul@gtnexttech.com",
+      from: '"ChumChum 👻" ',
+      // to: "chumchumth@gmail.com,nuttapon.wongkongmunsakul@gtnexttech.com,bew_so555@hotmail.com,watcharapol.numpaya@gtnexttech.com",
       // to:"bew15011@gmail.com",
+      to:"chumchumth@gmail.com",
       subject: "Reward Redemption",
       text: "Hello world?",
       html: `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -112,7 +126,7 @@ const sendEmail = async (retailer_name,bplus_code,reward_name,timestamp ) => {
                         <td class="es-m-p20b" align="left" style="padding:0;Margin:0;width:262px">
                          <table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                            <tr>
-                            <td align="center" style="padding:0;Margin:0"><img class="adapt-img" src="https://ebheodn.stripocdn.email/content/guids/CABINET_acbee75b9fd34b53f276b53f6a26594e/images/27971558443279576.png" alt style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" width="262"></td>
+                            <td align="center" style="padding:0;Margin:0"><img class="adapt-img" src="https://api-test.chumchumreward.com/images/${reward_image}"alt style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" width="262"></td>
                            </tr>
                          </table></td>
                        </tr>
@@ -166,13 +180,11 @@ const sendEmail = async (retailer_name,bplus_code,reward_name,timestamp ) => {
       </html>`,
     };
 
-    await transporter.sendMail(message);
-
+    let info = await transporter.sendMail(message);
+    console.log(info.messageId);
     console.log("Email sent successfully");
-   
   } catch (err) {
     console.error("Error sending email:", err);
-   
   }
 };
 

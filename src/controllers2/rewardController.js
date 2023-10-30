@@ -67,13 +67,28 @@ const getRedeemReward = async (req, res) => {
 
       // get timestamp from database before send email
       const redeem_timestamp_result = await db.query(
-        queries.getRedeemRewardTimestamp,[customer_id]
+        queries.getRedeemRewardTimestamp,
+        [customer_id]
       );
       const redeem_timestamp = redeem_timestamp_result[0][0].redeem_timestamp;
+      console.log(redeem_timestamp);
 
-      
-      //send email
-      await sendEmail(retailer_name, bplus_code, reward_name, redeem_timestamp);
+      //---------------------get reward image------------------------
+      const reward_image_result = await db.query(queries.getRewardImage, [
+        reward_id,
+      ]);
+      const reward_image = reward_image_result[0][0].reward_image;
+      console.log(reward_image);
+
+      //-----------------------send email-----------------------
+
+      await sendEmail(
+        retailer_name,
+        bplus_code,
+        reward_name,
+        redeem_timestamp,
+        reward_image
+      );
 
       //push line message
       //customer_id ต้องเป็นของ line
@@ -87,12 +102,10 @@ const getRedeemReward = async (req, res) => {
 
       res.status(201).json({ msg: "redeem successful", isRedeemSuccess: true });
     } else {
-      res
-        .status(404)
-        .json({
-          msg: "Redemption Failed: User Not Found",
-          isRedeemSuccess: false,
-        });
+      res.status(404).json({
+        msg: "Redemption Failed: User Not Found",
+        isRedeemSuccess: false,
+      });
     }
   } catch (err) {
     console.log(err);
