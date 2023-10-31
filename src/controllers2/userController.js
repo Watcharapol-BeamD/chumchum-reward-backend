@@ -47,9 +47,11 @@ const getRegisterNewCustomer = async (req, res) => {
     // const encryptPassword = await bcrypt.hash(password, saltRounds);
 
     // Generate a JWT token
-    const access_token = jwtAccessTokenGenerate(customer_id);
-    const refresh_token = jwtRefreshTokenGenerate(customer_id);
- 
+
+    const user = { customer_id };
+    const access_token = jwtAccessTokenGenerate(user);
+    const refresh_token = jwtRefreshTokenGenerate(user);
+
     // Insert the new user into the database
     await db.query(queries.registerNewCustomer, [
       customer_id,
@@ -123,10 +125,45 @@ const updateCustomerInformation = async (req, res) => {
   }
 };
 
+const getRefreshToken = async (req, res) => {
+  //receive data from middleware
+  const customer_id = req.customer_id;
+  const old_refresh_token = req.token;
+  try {
+    const results = await db.query(queries.getRefreshToken, [customer_id]);
+    if (results[0].length === 1) {
+      // Check is old refresh token if yes will reject.
+      if (old_refresh_token !== results[0][0].refresh_token) {
+        return res.sendStatus(401);
+        
+      }
+      const user = { customer_id };
+      const access_token = jwtAccessTokenGenerate(user);
+      const refresh_token = jwtRefreshTokenGenerate(user);
+
+      await db.query(queries.getUpdateRefreshToken, [refresh_token, customer_id]);
+
+      res.status(200).send({
+        access_token: access_token,
+        refresh_token: refresh_token,
+        msg: "token refresh complete Complete",
+      });
+    } else {
+      res.status(401).send({ msg: "Invalid credentials" });
+    }
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .send({ msg: "An error occurred while processing your request." });
+  }
+};
+
 module.exports = {
   getAllUser,
   getRegisterNewCustomer,
   getIsRegister,
   getCustomerById,
   updateCustomerInformation,
+  getRefreshToken,
 };

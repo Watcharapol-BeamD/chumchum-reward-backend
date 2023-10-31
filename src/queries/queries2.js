@@ -17,6 +17,8 @@ const increasePoint = `UPDATE Customers SET points = points + ? WHERE customer_i
 const decreasePoint = `UPDATE Customers SET points = points - ? WHERE customer_id = ?;`;
 const addNewRefreshToken = `UPDATE Customers SET refresh_token = ? WHERE customer_id = ?;`;
 const getRewardImage = `SELECT reward_image FROM Rewards WHERE reward_id = ?;`;
+const getRefreshToken = `SELECT refresh_token FROM Customers WHERE customer_id = ?`;
+const getUpdateRefreshToken = `UPDATE Customers SET refresh_token = ? WHERE customer_id = ?;`;
 
 module.exports = {
   getAllUser,
@@ -33,4 +35,6 @@ module.exports = {
   decreasePoint,
   addNewRefreshToken,
   getRewardImage,
+  getUpdateRefreshToken,
+  getRefreshToken,
 };
