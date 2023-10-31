@@ -5,7 +5,7 @@ const queries = require("../queries/queries2.js");
 const client = require("../services/lineUtils");
 const template = require("./../lineMessageTemplates/template");
 const { sendEmail } = require("../services/emailService");
-const {sendLineMessage} = require('../services/lineMessageService,js')
+const {sendLineMessage} = require('../services/lineMessageService.js')
 
 //-------------Reward Controller--------------------------
 
