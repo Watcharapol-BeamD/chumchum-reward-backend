@@ -1,9 +1,6 @@
 require("dotenv").config();
-const nodemailer = require("nodemailer");
 const { db } = require("../../db");
 const queries = require("../queries/queries2.js");
-const client = require("../services/lineUtils");
-const template = require("./../lineMessageTemplates/template");
 const { sendEmail } = require("../services/emailService");
 const {sendLineMessage} = require('../services/lineMessageService.js')
 

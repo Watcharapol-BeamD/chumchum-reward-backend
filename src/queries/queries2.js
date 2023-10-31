@@ -15,10 +15,15 @@ const getRewardById = `SELECT * FROM Rewards WHERE reward_id = ?`;
 const updateCustomerInfo = `UPDATE Customers SET province = ?, district=?,sub_district=?, post_code=?,address=? WHERE customer_id = ?;`;
 const increasePoint = `UPDATE Customers SET points = points + ? WHERE customer_id = ?;`;
 const decreasePoint = `UPDATE Customers SET points = points - ? WHERE customer_id = ?;`;
-const addNewRefreshToken = `UPDATE Customers SET refresh_token = ? WHERE customer_id = ?;`;
 const getRewardImage = `SELECT reward_image FROM Rewards WHERE reward_id = ?;`;
+
+//----------------------------useless----------------------------
+const addNewRefreshToken = `UPDATE Customers SET refresh_token = ? WHERE customer_id = ?;`;
 const getRefreshToken = `SELECT refresh_token FROM Customers WHERE customer_id = ?`;
 const getUpdateRefreshToken = `UPDATE Customers SET refresh_token = ? WHERE customer_id = ?;`;
+// --------------------------------------------------------
+
+
 
 module.exports = {
   getAllUser,
