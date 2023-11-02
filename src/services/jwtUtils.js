@@ -1,9 +1,10 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
+//***use for admin only */
 const jwtAccessTokenGenerate = (user) => {
   const accessToken = jwt.sign(
-    { customer_id: user.customer_id },
+    { admin_id: user.admin_id },
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: "20m", algorithm: "HS256" }
   );
@@ -13,7 +14,7 @@ const jwtAccessTokenGenerate = (user) => {
 
 const jwtRefreshTokenGenerate = (user) => {
   const refreshToken = jwt.sign(
-    { customer_id: user.customer_id },
+    { admin_id: user.admin_id },
     process.env.REFRESH_TOKEN_SECRET,
     { expiresIn: "7d", algorithm: "HS256" }
   );

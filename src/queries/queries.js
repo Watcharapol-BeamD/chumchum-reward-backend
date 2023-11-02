@@ -1,41 +1,44 @@
-const getAllUser = "SELECT * FROM users;";
-const getUserById = "SELECT * FROM users WHERE user_id = $1 ";
+const getAllUser = "SELECT * FROM Customers;";
+const getCustomerById = "SELECT * FROM Customers WHERE customer_id = ?";
+const registerNewCustomer =
+  "INSERT INTO Customers (customer_id, retailer_name, bplus_code, phone_number,refresh_token)VALUES (?, ?, ?, ?,?)";
+
 const getCheckUserExist =
-  "SELECT COUNT(*) AS count FROM users WHERE user_id = $1";
-const registerNewUser =
-  "INSERT INTO users (user_id, retailer_name, bplus_code, mobile_number)VALUES ($1, $2, $3, $4)";
+  "SELECT COUNT(*) AS count FROM Customers WHERE Customer_id =?";
 
-const keepRewardToHistory =
-  "INSERT INTO redeemed_rewards (fk_user_id, reward_name, quantity, timestamp)VALUES ($1, $2, $3, $4)";
-
-// const getRetailerInfo  = "SELECT * FROM redeemed_rewards WHERE "
-
-// -------------------------------------------
-const getReward =  "SELECT * FROM Rewards;"
-const getRedeemHistory =  "SELECT * FROM redeem_history;"
-const getRedeemHistoryByUserId =  "SELECT RH.*, U.*FROM Redeem_History RH INNER JOIN Users U ON RH.fk_user_id = U.user_id WHERE U.user_id = $1;"
-const addNewReward ="INSERT INTO Rewards (reward_id,name, description, quantity)VALUES($1, $2, $3, $4)"
-const increaseRewardQuantity = "UPDATE Rewards SET quantity = quantity + $1 WHERE reward_id = $2"
-const decreaseRewardQuantity = "UPDATE Rewards SET quantity = quantity - $1 WHERE reward_id = $2;"
-const getRewardRemainQuantity  = "SELECT reward_id,quantity FROM Rewards WHERE reward_id = $1;"
-const getRedeemReward = "INSERT INTO Redeem_History (timestamp, Redeem_History, quantity, fk_user_id, fk_reward_id)VALUES ($1, $2, $3, $4, $5)"
-
-
-
-
+const keepRewardToHistory = `INSERT INTO Redeem_Histories (fk_customer_id,fk_reward_id,quantity, points_used)VALUES(?, ?, ?, ?)`;
+const getRedeemRewardTimestamp = `SELECT redeem_timestamp FROM Redeem_Histories WHERE fk_customer_id ='U1a12937aef17947c281f9d3e7cf857b7' ORDER BY redeem_history_id DESC LIMIT 1;`;
+const getRewardRemainQuantity =
+  "SELECT reward_id,quantity FROM Rewards WHERE reward_id = ?;";
+const getReward = `SELECT * FROM Rewards`;
+const getRewardById = `SELECT * FROM Rewards WHERE reward_id = ?`;
+const updateCustomerInfo = `UPDATE Customers SET province = ?, district=?,sub_district=?, post_code=?,address=? WHERE customer_id = ?;`;
+const increasePoint = `UPDATE Customers SET points = points + ? WHERE customer_id = ?;`;
+const decreasePoint = `UPDATE Customers SET points = points - ? WHERE customer_id = ?;`;
+const getRewardImage = `SELECT reward_image FROM Rewards WHERE reward_id = ?;`;
+ 
+//----------------------------useless----------------------------
+const addNewRefreshToken = `UPDATE Customers SET refresh_token = ? WHERE customer_id = ?;`;
+const getRefreshToken = `SELECT refresh_token FROM Customers WHERE customer_id = ?`;
+const getUpdateRefreshToken = `UPDATE Customers SET refresh_token = ? WHERE customer_id = ?;`;
+// --------------------------------------------------------
 
 module.exports = {
   getAllUser,
-  getUserById,
+  registerNewCustomer,
   getCheckUserExist,
-  registerNewUser,
   keepRewardToHistory,
-  getReward,
-  getRedeemHistory,
-  getRedeemHistoryByUserId,
-  addNewReward,
-  increaseRewardQuantity,
-  decreaseRewardQuantity,
+  getRedeemRewardTimestamp,
   getRewardRemainQuantity,
-  getRedeemReward
+  getReward,
+  getRewardById,
+  getCustomerById,
+  updateCustomerInfo,
+  increasePoint,
+  decreasePoint,
+  addNewRefreshToken,
+  getRewardImage,
+  getUpdateRefreshToken,
+  getRefreshToken,
+ 
 };

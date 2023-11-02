@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const rewardController = require("../controllers2/rewardController");
+const rewardController = require("../controllers/rewardController");
 
 //get request
 // router.get('/has_reward',rewardController.getRedeemReward)

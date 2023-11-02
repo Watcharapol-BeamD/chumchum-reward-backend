@@ -1,49 +1,72 @@
-require("dotenv").config();
-
-const {pool} = require("../../db");
-const queries = require("../queries/queries.js");
-
-const { sendEmail } = require("../services/emailService");
+const { db } = require("../../db");
+const queries = require("../queries/queries");
+const {
+  jwtAccessTokenGenerate,
+  jwtRefreshTokenGenerate,
+} = require("../services/jwtUtils");
 
 const getAllUser = async (req, res) => {
   try {
-    const results = await pool.query(queries.getAllUser);
-    res.status(200).json(results.rows);
+    const results = await db.query(queries.getAllUser); // Use promise() here
+    res.status(200).json(results[0]); // Results is an array; use results[0] to access the data
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: "An error occurred while fetching users." });
   }
 };
 
-const getRegister = async (req, res) => {
-  const { user_id, retailer_name, bplus_code, mobile_number } = req.body;
+const getCustomerById = async (req, res) => {
+  const { customer_id } = req.body;
+
+  try {
+    const results = await db.query(queries.getCustomerById, [customer_id]);
+
+    res.status(200).json(results[0][0]);
+  } catch {
+    res.status(500).json({ msg: "An error occurred while fetching users." });
+  }
+};
+
+const getRegisterNewCustomer = async (req, res) => {
+  const { customer_id, retailer_name, bplus_code, phone_number } = req.body;
   console.log(req.body);
 
   try {
     // Check if the user already exists in the database
-    const userExistsResult = await pool.query(queries.getCheckUserExist, [
-      user_id,
+    const userExistsResult = await db.query(queries.getCheckUserExist, [
+      customer_id,
     ]);
 
-    const existingUserCount = userExistsResult.rows[0].count;
+    const existingUserCount = userExistsResult[0][0].count;
     if (existingUserCount > 0) {
       return res
         .status(400)
-        .json({ msg: "user already register", isRegisterPass: false });
+        .json({ msg: "This user already register", isRegisterPass: false });
     }
 
     // const encryptPassword = await bcrypt.hash(password, saltRounds);
 
+    // Generate a JWT token
+
+    const user = { customer_id };
+    const access_token = jwtAccessTokenGenerate(user);
+    const refresh_token = jwtRefreshTokenGenerate(user);
+
     // Insert the new user into the database
-    await pool.query(queries.registerNewUser, [
-      user_id,
+    await db.query(queries.registerNewCustomer, [
+      customer_id,
       retailer_name,
       bplus_code,
-      mobile_number,
+      phone_number,
+      refresh_token,
     ]);
-    res
-      .status(201)
-      .json({ msg: "Registration successful", isRegisterPass: true });
+
+    res.status(201).json({
+      msg: "Registration successful",
+      isRegisterPass: true,
+      access_token: access_token,
+      refresh_token: refresh_token,
+    });
   } catch (err) {
     console.error(err);
     res
@@ -52,27 +75,15 @@ const getRegister = async (req, res) => {
   }
 };
 
-const getUserById = async (req, res) => {
-  const id = req.body.id;
-
-  try {
-    const results = await pool.query(queries.getUserById, [id]);
-
-    res.status(200).json(results.rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ msg: "An error occurred while fetching users." });
-  }
-};
-
 const getIsRegister = async (req, res) => {
-  const { user_id } = req.body;
+  const { customer_id } = req.body;
   try {
     // Check if the user already exists in the database
-    const userExistsResult = await pool.query(queries.getCheckUserExist, [
-      user_id,
+    const userExistsResult = await db.query(queries.getCheckUserExist, [
+      customer_id,
     ]);
-    const existingUserCount = userExistsResult.rows[0].count;
+    const existingUserCount = userExistsResult[0][0].count;
+
     if (existingUserCount > 0) {
       res.status(200).json({ isRegister: true });
     } else {
@@ -84,62 +95,79 @@ const getIsRegister = async (req, res) => {
   }
 };
 
-
-const getRetailerInfo = async (req,res)=>{
-try{
-  const retailerInfo = await pool.query()
-}catch{
-
-}
-
-}
-
-const getRedeemReward = async (req, res) => {
-  const { user_id, reward_name, quantity, timestamp,retailer_name,bplus_code } = req.body;
-  console.log(req.body);
+const updateCustomerInformation = async (req, res) => {
+  const { province, district, sub_district, post_code, address, customer_id } =
+    req.body;
   try {
-    // Check if the user already exists in the database
-    const userExistsResult = await pool.query(queries.getCheckUserExist, [
-      user_id,
+    const userExistsResult = await db.query(queries.getCheckUserExist, [
+      customer_id,
     ]);
-    const existingUserCount = userExistsResult.rows[0].count;
+    const existingUserCount = userExistsResult[0][0].count;
     if (existingUserCount > 0) {
-      // Insert the redeem reward into the database.
-      await pool.query(queries.keepRewardToHistory, [
-        user_id,
-        reward_name,
-        quantity,
-        timestamp,
+      await db.query(queries.updateCustomerInfo, [
+        province,
+        district,
+        sub_district,
+        post_code,
+        address,
+        customer_id,
       ]);
-
-//------------get retailer name by user_id-----------------
- 
- 
-      await sendEmail(retailer_name,bplus_code,reward_name,timestamp);
-
-      //push line message
-      // client.pushMessage(user_id, [
-      //  template.replyRedeemRewardV2,
-      //   // {
-      //   //     "type": "text",
-      //   //     "text": "ขอบคุณที่แลกของ"
-      //   // }
-      // ]);
-
-      res.status(201).json({ msg: "redeem successful" });
+      res.status(200).json({
+        msg: "Update customer information successful.",
+        isFinish: true,
+      });
     } else {
-      res.status(404).json({ msg: "Redemption Failed: User Not Found" });
+      res.status(404).json({ msg: "User not found.", isFinish: false });
     }
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).send("An error occurred while processing your request.");
   }
 };
 
+const getRefreshToken = async (req, res) => {
+  //receive data from middleware
+  const customer_id = req.customer_id;
+  const old_refresh_token = req.token;
+  try {
+    const results = await db.query(queries.getRefreshToken, [customer_id]);
+    if (results[0].length === 1) {
+      // Check is old refresh token if yes will reject.
+      if (old_refresh_token !== results[0][0].refresh_token) {
+        return res.sendStatus(401);
+      }
+      const user = { customer_id };
+      const access_token = jwtAccessTokenGenerate(user);
+      const refresh_token = jwtRefreshTokenGenerate(user);
+
+      await db.query(queries.getUpdateRefreshToken, [
+        refresh_token,
+        customer_id,
+      ]);
+
+      res.status(200).send({
+        access_token: access_token,
+        refresh_token: refresh_token,
+        msg: "token refresh complete Complete",
+      });
+    } else {
+      res.status(401).send({ msg: "Invalid credentials" });
+    }
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .send({ msg: "An error occurred while processing your request." });
+  }
+};
+
+ 
 module.exports = {
   getAllUser,
-  getUserById,
-  getRegister,
+  getRegisterNewCustomer,
   getIsRegister,
-  getRedeemReward,
+  getCustomerById,
+  updateCustomerInformation,
+  getRefreshToken,
+   
 };
