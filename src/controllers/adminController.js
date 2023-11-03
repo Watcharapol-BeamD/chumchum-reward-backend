@@ -1,6 +1,7 @@
 require("dotenv").config();
 const { db } = require("../../db");
 const adminQueries = require("../queries/adminQueries");
+
 const {
   jwtAccessTokenGenerate,
   jwtRefreshTokenGenerate,
@@ -45,7 +46,7 @@ const getCustomerInfo = async (req, res) => {
     const results = await db.query(adminQueries.getCustomerInfoList);
  
     const customerList = results[0]
-    res.status(200).json({customerList:customerList,msg:""});
+    res.status(200).json(customerList);
   } catch (err) {
     console.error(err);
     res.status(500).send("An error occurred while processing your request.");
