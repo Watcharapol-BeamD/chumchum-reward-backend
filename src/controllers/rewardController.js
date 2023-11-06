@@ -2,7 +2,7 @@ require("dotenv").config();
 const { db } = require("../../db");
 const queries = require("../queries/queries.js");
 const { sendEmail } = require("../services/emailService");
-const {sendLineMessage} = require('../services/lineMessageService.js')
+const { sendLineMessage } = require("../services/lineMessageService.js");
 
 //-------------Reward Controller--------------------------
 
@@ -76,7 +76,6 @@ const getRedeemReward = async (req, res) => {
         reward_id,
       ]);
       const reward_image = reward_image_result[0][0].reward_image;
-  
 
       //-----------------------send email-----------------------
 
@@ -91,7 +90,6 @@ const getRedeemReward = async (req, res) => {
       //------------------------push line message----------------
       //customer_id ต้องเป็นของ line
       // await sendLineMessage(customer_id,reward_image,reward_name)
-
 
       res.status(201).json({ msg: "redeem successful", isRedeemSuccess: true });
     } else {
@@ -127,10 +125,20 @@ const getSendEmail = async (req, res) => {
   console.log("wrong");
 };
 
+const addNewReward = async (req, res) => {
+  // console.log(req);
+  console.log(req.file);
+  // console.log(req.body);
+};
+
+
+
+
 module.exports = {
   getRedeemReward,
   getSendEmail,
   getRemainReward,
   getReward,
   getRewardById,
+  addNewReward,
 };
