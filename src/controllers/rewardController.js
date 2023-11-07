@@ -151,7 +151,7 @@ const addNewReward = async (req, res) => {
   } = req.body;
 
   try {
-    db.query(queries.addNewReward, [
+    await db.query(queries.addNewReward, [
       rewardName,
       requirePoints,
       customerGroup,
@@ -183,6 +183,7 @@ const editReward = async (req, res) => {
     endDate,
     description,
   } = req.body;
+  // ftpService.deleteFileFromHost();
 };
 
 module.exports = {
@@ -192,4 +193,5 @@ module.exports = {
   getReward,
   getRewardById,
   addNewReward,
+  editReward,
 };
