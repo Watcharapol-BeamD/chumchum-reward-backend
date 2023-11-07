@@ -16,7 +16,13 @@ const updateCustomerInfo = `UPDATE Customers SET province = ?, district=?,sub_di
 const increasePoint = `UPDATE Customers SET points = points + ? WHERE customer_id = ?;`;
 const decreasePoint = `UPDATE Customers SET points = points - ? WHERE customer_id = ?;`;
 const getRewardImage = `SELECT reward_image FROM Rewards WHERE reward_id = ?;`;
- 
+
+//----------------------reward----------------------------
+const addNewReward = `INSERT INTO Rewards (name,require_point, customer_group,quantity, status,event_start_date, event_end_date,description,reward_image)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+//----------------------reward-End---------------------------
+
 //----------------------------useless----------------------------
 const addNewRefreshToken = `UPDATE Customers SET refresh_token = ? WHERE customer_id = ?;`;
 const getRefreshToken = `SELECT refresh_token FROM Customers WHERE customer_id = ?`;
@@ -40,5 +46,5 @@ module.exports = {
   getRewardImage,
   getUpdateRefreshToken,
   getRefreshToken,
- 
+  addNewReward,
 };

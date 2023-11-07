@@ -136,8 +136,33 @@ const addNewReward = async (req, res) => {
   try {
     // Get the path to the uploaded file
     const filePath = req.file.path;
-    const fileName =req.file.originalname
-    console.log(req.file);
+    const fileName = req.file.originalname;
+
+    const {
+      rewardName,
+      requirePoints,
+      customerGroup,
+      quantity,
+      status,
+      startDate,
+      endDate,
+      description,
+    } = req.body;
+
+    db.query(queries.addNewReward, [
+      rewardName,
+      requirePoints,
+      customerGroup,
+      quantity,
+      status,
+      startDate,
+      endDate,
+      description,
+      fileName,
+    ]);
+
+    //----------------------FTP-------------------------
+
     // Connect to the cPanel FTP
     const client = new ftp.Client();
     client.ftp.verbose = true;
@@ -153,19 +178,20 @@ const addNewReward = async (req, res) => {
     // Connect to FTP
     await client.access(ftpOptions);
 
-    // Directory in cPanel where you want to upload the file
+    // Directory in cPanel where to upload the file
     await client.ensureDir("/images");
 
     // Read the file to upload
     const data = fs.createReadStream(filePath);
 
     // Upload the file
-    await client.uploadFrom(data,`/images/${fileName}` );
+    await client.uploadFrom(data, `/images/${fileName}`);
 
     // Close the FTP connection
     client.close();
-    
-    deleteFile(filePath)
+    deleteFile(filePath);
+    //----------------------FTP-END------------------------
+
     // Handle success
     res.status(200).send("File uploaded to cPanel successfully");
   } catch (error) {
