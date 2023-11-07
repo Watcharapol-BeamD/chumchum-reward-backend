@@ -1,9 +1,10 @@
 require("dotenv").config();
 const { db } = require("../../db");
 const queries = require("../queries/queries.js");
-const deleteFile = require("../services/deleteUploadedImage.js");
+const deleteFileFromBackend = require("../services/deleteUploadedImage.js");
 const { sendEmail } = require("../services/emailService");
 const { sendLineMessage } = require("../services/lineMessageService.js");
+const ftpService = require("../services/ftpService.js");
 
 // ----------------------FTP--------------------------
 const ftp = require("basic-ftp");
@@ -134,22 +135,22 @@ const getSendEmail = async (req, res) => {
 };
 
 const addNewReward = async (req, res) => {
+  // Get the path to the uploaded file
+  const filePath = req.file.path;
+  const fileName = req.file.originalname;
+
+  const {
+    rewardName,
+    requirePoints,
+    customerGroup,
+    quantity,
+    status,
+    startDate,
+    endDate,
+    description,
+  } = req.body;
+
   try {
-    // Get the path to the uploaded file
-    const filePath = req.file.path;
-    const fileName = req.file.originalname;
-
-    const {
-      rewardName,
-      requirePoints,
-      customerGroup,
-      quantity,
-      status,
-      startDate,
-      endDate,
-      description,
-    } = req.body;
-
     db.query(queries.addNewReward, [
       rewardName,
       requirePoints,
@@ -161,45 +162,27 @@ const addNewReward = async (req, res) => {
       description,
       fileName,
     ]);
-
-    //----------------------FTP-------------------------
-
-    // Connect to the cPanel FTP
-    const client = new ftp.Client();
-    client.ftp.verbose = true;
-
-    // Replace these with your cPanel FTP details
-    const ftpOptions = {
-      host: process.env.FTP_HOST,
-      port: process.env.FTP_PORT,
-      user: process.env.FTP_USERNAME,
-      password: process.env.FTP_PASSWORD,
-    };
-
-    // Connect to FTP
-    await client.access(ftpOptions);
-
-    // Directory in cPanel where to upload the file
-    await client.ensureDir("/images");
-
-    // Read the file to upload
-    const data = fs.createReadStream(filePath);
-
-    // Upload the file
-    await client.uploadFrom(data, `/images/${fileName}`);
-
-    // Close the FTP connection
-    client.close();
-    deleteFile(filePath);
-    //----------------------FTP-END------------------------
-
+    ftpService.uploadImageToHost(filePath, fileName);
     // Handle success
-    res.status(200).send("File uploaded to cPanel successfully");
+    res.status(200).send("Add new reward successfully.");
   } catch (error) {
     // Handle error
     console.error(error);
-    res.status(500).send("Error uploading file to cPanel");
+    res.status(500).send("Error while add new reward.");
   }
+};
+
+const editReward = async (req, res) => {
+  const {
+    rewardName,
+    requirePoints,
+    customerGroup,
+    quantity,
+    status,
+    startDate,
+    endDate,
+    description,
+  } = req.body;
 };
 
 module.exports = {
