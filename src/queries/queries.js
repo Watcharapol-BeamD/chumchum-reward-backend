@@ -20,7 +20,7 @@ const getRewardImage = `SELECT reward_image FROM Rewards WHERE reward_id = ?;`;
 //----------------------reward----------------------------
 const addNewReward = `INSERT INTO Rewards (name,require_point, customer_group,quantity, status,event_start_date, event_end_date,description,reward_image)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-
+const decreaseReward = `UPDATE Rewards SET quantity = quantity - ? WHERE reward_id = ?;`;
 //----------------------reward-End---------------------------
 
 //----------------------------useless----------------------------
@@ -47,4 +47,5 @@ module.exports = {
   getUpdateRefreshToken,
   getRefreshToken,
   addNewReward,
+  decreaseReward,
 };

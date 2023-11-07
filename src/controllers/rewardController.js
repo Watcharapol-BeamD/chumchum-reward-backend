@@ -67,7 +67,8 @@ const getRedeemReward = async (req, res) => {
 
       // ------------------- Decrease point--------------------------
       db.query(queries.decreasePoint, [points_used, customer_id]);
-
+      // ------------------- Decrease reward--------------------------
+      db.query(queries.decreaseReward, [quantity, reward_id]);
       //------------get retailer name by customer_id-----------------
 
       //------------get timestamp from database before send email----
