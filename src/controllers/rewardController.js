@@ -193,6 +193,8 @@ const editRewardDetails = async (req, res) => {
     description,
     rewardId,
     imageName,
+    oldImageName
+    
   } = req.body;
 
   console.log(req.body);
@@ -205,8 +207,10 @@ const editRewardDetails = async (req, res) => {
     const fileName = generateName + "_" + req.file.originalname;
 
     //--delete old image--
-    console.log("-----------delete");
-    ftpService.deleteFileFromHost(imageName);
+    console.log("----------------------------");
+    console.log(imageName);
+    console.log("----------------------------");
+    ftpService.deleteFileFromHost(oldImageName);
     //--------------------
 
     try {
