@@ -5,6 +5,7 @@ const deleteFileFromBackend = require("../services/deleteUploadedImage.js");
 const { sendEmail } = require("../services/emailService");
 const { sendLineMessage } = require("../services/lineMessageService.js");
 const ftpService = require("../services/ftpService.js");
+const { default: ShortUniqueId } = require("short-unique-id");
 
 // ----------------------FTP--------------------------
 const ftp = require("basic-ftp");
@@ -135,9 +136,12 @@ const getSendEmail = async (req, res) => {
 };
 
 const addNewReward = async (req, res) => {
+  const { randomUUID } = new ShortUniqueId({ length: 10 });
+  const generateName = randomUUID()
   // Get the path to the uploaded file
   const filePath = req.file.path;
-  const fileName = req.file.originalname;
+  //concat image name to prevent image name duplicate.
+  const fileName = generateName+'_'+ req.file.originalname;
 
   const {
     rewardName,
@@ -164,7 +168,9 @@ const addNewReward = async (req, res) => {
     ]);
     ftpService.uploadImageToHost(filePath, fileName);
     // Handle success
-    res.status(200).send("Add new reward successfully.");
+    res
+      .status(200)
+      .send({ msg: "Add new reward successfully.", isFinish: true });
   } catch (error) {
     // Handle error
     console.error(error);
@@ -172,7 +178,9 @@ const addNewReward = async (req, res) => {
   }
 };
 
-const editReward = async (req, res) => {
+const editRewardDetails = async (req, res) => {
+  // const { randomUUID } = new ShortUniqueId({ length: 10 });
+ 
   const {
     rewardName,
     requirePoints,
@@ -182,8 +190,43 @@ const editReward = async (req, res) => {
     startDate,
     endDate,
     description,
+    rewardId,
   } = req.body;
-  // ftpService.deleteFileFromHost();
+
+  console.log(req.body);
+
+  //Check has image
+  if (req.file !== undefined) {
+    const filePath = req.file.path;
+    const fileName = req.file.originalname;
+
+    //--delete old image--
+
+    //--------------------
+
+    try {
+      await db.query(queries.addNewReward, [
+        rewardName,
+        requirePoints,
+        customerGroup,
+        quantity,
+        status,
+        startDate,
+        endDate,
+        description,
+        fileName,
+      ]);
+      ftpService.uploadImageToHost(filePath, fileName);
+      // Handle success
+      res
+        .status(200)
+        .send({ msg: "Add new reward successfully.", isFinish: true });
+    } catch (error) {
+      // Handle error
+      console.error(error);
+      res.status(500).send("Error while add new reward.");
+    }
+  }
 };
 
 module.exports = {
@@ -193,5 +236,5 @@ module.exports = {
   getReward,
   getRewardById,
   addNewReward,
-  editReward,
+  editRewardDetails,
 };
