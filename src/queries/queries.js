@@ -22,8 +22,8 @@ const getRewardById = `SELECT * FROM Rewards WHERE reward_id = ?`;
 const addNewReward = `INSERT INTO Rewards (name,require_point, customer_group,quantity, status,event_start_date, event_end_date,description,reward_image)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 const decreaseReward = `UPDATE Rewards SET quantity = quantity - ? WHERE reward_id = ?;`;
-const updateRewardInfo = `UPDATE Rewards SET name = ?, require_point=?,customer_group=?, quantity=?,status=?,event_start_date=?,event_end_date=?,description=? WHERE reward_id = ?;`;
-const updateRewardInfoAndImage = `UPDATE Rewards SET name = ?, require_point=?,customer_group=?, quantity=?,status=?,event_start_date=?,event_end_date=?,description=?,reward_image=? WHERE reward_id = ?;`;
+const updateRewardDetails = `UPDATE Rewards SET name = ?, require_point=?,customer_group=?, quantity=?,status=?,event_start_date=?,event_end_date=?,description=? WHERE reward_id = ?;`;
+const updateRewardDetailsAndImage = `UPDATE Rewards SET name = ?, require_point=?,customer_group=?, quantity=?,status=?,event_start_date=?,event_end_date=?,description=?,reward_image=? WHERE reward_id = ?;`;
 //----------------------reward-End---------------------------
 
 //----------------------------useless----------------------------
@@ -51,6 +51,6 @@ module.exports = {
   getRefreshToken,
   addNewReward,
   decreaseReward,
-  updateRewardInfo,
-  updateRewardInfoAndImage,
+  updateRewardDetails,
+  updateRewardDetailsAndImage,
 };

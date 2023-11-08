@@ -137,11 +137,11 @@ const getSendEmail = async (req, res) => {
 
 const addNewReward = async (req, res) => {
   const { randomUUID } = new ShortUniqueId({ length: 10 });
-  const generateName = randomUUID()
+  const generateName = randomUUID();
   // Get the path to the uploaded file
   const filePath = req.file.path;
   //concat image name to prevent image name duplicate.
-  const fileName = generateName+'_'+ req.file.originalname;
+  const fileName = generateName + "_" + req.file.originalname;
 
   const {
     rewardName,
@@ -179,8 +179,9 @@ const addNewReward = async (req, res) => {
 };
 
 const editRewardDetails = async (req, res) => {
-  // const { randomUUID } = new ShortUniqueId({ length: 10 });
- 
+  const { randomUUID } = new ShortUniqueId({ length: 10 });
+  const generateName = randomUUID();
+
   const {
     rewardName,
     requirePoints,
@@ -191,21 +192,25 @@ const editRewardDetails = async (req, res) => {
     endDate,
     description,
     rewardId,
+    imageName,
   } = req.body;
 
   console.log(req.body);
-
-  //Check has image
+  //-----------------------if update details with image-----------------------
+  //Check has image if has do this function
   if (req.file !== undefined) {
+    // Get the path to the uploaded file
     const filePath = req.file.path;
-    const fileName = req.file.originalname;
+    //concat image name to prevent image name duplicate.
+    const fileName = generateName + "_" + req.file.originalname;
 
     //--delete old image--
-
+    console.log("-----------delete");
+    ftpService.deleteFileFromHost(imageName);
     //--------------------
 
     try {
-      await db.query(queries.addNewReward, [
+      await db.query(queries.updateRewardDetailsAndImage, [
         rewardName,
         requirePoints,
         customerGroup,
@@ -215,17 +220,43 @@ const editRewardDetails = async (req, res) => {
         endDate,
         description,
         fileName,
+        rewardId,
       ]);
+      console.log("-----------upload");
       ftpService.uploadImageToHost(filePath, fileName);
-      // Handle success
-      res
+
+      return res
         .status(200)
-        .send({ msg: "Add new reward successfully.", isFinish: true });
+        .send({ msg: "Update reward details successfully.", isFinish: true });
     } catch (error) {
       // Handle error
       console.error(error);
-      res.status(500).send("Error while add new reward.");
+      return res.status(500).send("Error while update reward details.");
     }
+  } else {
+    //-----------------------if update details no image-----------------------
+    try {
+      await db.query(queries.updateRewardDetails, [
+        rewardName,
+        requirePoints,
+        customerGroup,
+        quantity,
+        status,
+        startDate,
+        endDate,
+        description,
+        rewardId,
+      ]);
+
+      return res
+        .status(200)
+        .send({ msg: "Update reward details successfully.", isFinish: true });
+    } catch (error) {
+      // Handle error
+      console.error(error);
+      return res.status(500).send("Error while update reward details.");
+    }
+    //---------------------------------------------------------------------------}
   }
 };
 
