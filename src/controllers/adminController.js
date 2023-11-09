@@ -21,6 +21,7 @@ const getResetAdminPassword = async (req, res) => {
       return res.status(401).send({
         resetPasswordMsg: "Invalid Credentials",
         is_reset_finish: false,
+        is_first_login: 1,
       });
     }
     //-----Hash password---------
@@ -37,7 +38,12 @@ const getResetAdminPassword = async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    res.status(500).send("An error occurred while processing your request.");
+    res
+      .status(500)
+      .send({
+        resetPasswordMsg: "An error occurred while processing your request.",
+        is_first_login: 1,
+      });
   }
 };
 
@@ -92,7 +98,7 @@ const getLogin = async (req, res) => {
             is_first_login: user.is_first_login,
           });
           //---------------------------------------------------------------------------------------
-        }else{
+        } else {
           return res.status(401).json({
             msg: "Invalid credential",
             is_login_pass: false,
