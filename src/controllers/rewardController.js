@@ -193,8 +193,7 @@ const editRewardDetails = async (req, res) => {
     description,
     rewardId,
     imageName,
-    oldImageName
-    
+    oldImageName,
   } = req.body;
 
   console.log(req.body);
@@ -227,11 +226,11 @@ const editRewardDetails = async (req, res) => {
         rewardId,
       ]);
       console.log("-----------upload");
-      ftpService.uploadImageToHost(filePath, fileName);
-
-      return res
-        .status(200)
-        .send({ msg: "Update reward details successfully.", isFinish: true });
+      ftpService.uploadImageToHost(filePath, fileName).then(() => {
+        return res
+          .status(200)
+          .send({ msg: "Update reward details successfully.", isFinish: true });
+      });
     } catch (error) {
       // Handle error
       console.error(error);
