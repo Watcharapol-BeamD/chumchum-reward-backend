@@ -7,7 +7,17 @@ const {
   jwtRefreshTokenGenerate,
 } = require("../services/jwtUtils");
 
-const resetPassword = () => {};
+const GetResetAdminPassword = async (req, res) => {
+  const { password, adminId } = req.body;
+
+  try {
+    db.query(adminQueries.resetPassword, [password, adminId]);
+    res.status(200).send("Reset password success.");
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("An error occurred while processing your request.");
+  }
+};
 
 const getLogin = async (req, res) => {
   const { username, password } = req.body;
@@ -19,7 +29,10 @@ const getLogin = async (req, res) => {
     if (result[0].length > 0) {
       // const passwordMatch = await bcrypt.compare(password, user.password);
 
-      const userData = { admin_id: user.admin_id };
+      const userData = {
+        admin_id: user.admin_id,
+        is_first_login: user.is_first_login,
+      };
 
       //***jwt use for admin only*/
       const access_token = jwtAccessTokenGenerate(userData);
@@ -39,13 +52,11 @@ const getLogin = async (req, res) => {
   }
 };
 
-
 const getCustomerInfo = async (req, res) => {
- 
   try {
     const results = await db.query(adminQueries.getCustomerInfoList);
- 
-    const customerList = results[0]
+
+    const customerList = results[0];
     res.status(200).json(customerList);
   } catch (err) {
     console.error(err);
@@ -54,5 +65,7 @@ const getCustomerInfo = async (req, res) => {
 };
 
 module.exports = {
-  getLogin,getCustomerInfo
+  getLogin,
+  getCustomerInfo,
+  GetResetAdminPassword,
 };
