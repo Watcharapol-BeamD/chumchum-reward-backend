@@ -6,14 +6,35 @@ const {
   jwtAccessTokenGenerate,
   jwtRefreshTokenGenerate,
 } = require("../services/jwtUtils");
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 
 const getResetAdminPassword = async (req, res) => {
   const { newPassword, current_password, admin_id } = req.body;
-  console.log(req.body);
+  // console.log(req.body);
   try {
-    
-    db.query(adminQueries.resetPassword, [newPassword, admin_id,current_password]);
-    res.status(200).send("Reset password success.");
+    const result = await db.query(adminQueries.getAdminDetails, [admin_id]);
+    const user = result[0][0];
+
+    //if password not match will reject
+    if (user.password !== current_password) {
+      return res.status(401).send({
+        resetPasswordMsg: "Invalid Credentials",
+        is_reset_finish: false,
+      });
+    }
+    //-----Hash password---------
+    const encryptPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    //--------------------------
+
+    //update new password
+    await db.query(adminQueries.resetPassword, [encryptPassword, admin_id]);
+    res.status(200).send({
+      resetPasswordMsg: "Reset password success.",
+      is_reset_finish: true,
+      is_first_login: 0,
+    });
   } catch (err) {
     console.log(err);
     res.status(500).send("An error occurred while processing your request.");
@@ -21,35 +42,75 @@ const getResetAdminPassword = async (req, res) => {
 };
 
 const getLogin = async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, phoneNumber } = req.body;
 
   try {
-    const result = await db.query(adminQueries.getLogin, [username, password]);
-
+    const result = await db.query(adminQueries.getLogin, [
+      username,
+      phoneNumber,
+    ]);
     const user = result[0][0];
-    if (result[0].length > 0) {
-      // const passwordMatch = await bcrypt.compare(password, user.password);
 
+    if (result[0].length > 0) {
       const userData = {
         admin_id: user.admin_id,
       };
 
-      //***jwt use for admin only*/ if add more information in token modify in function too.
-      const access_token = jwtAccessTokenGenerate(userData);
-      const refresh_token = jwtRefreshTokenGenerate(userData);
-      res.status(200).json({
-        msg: "Login complete",
-        is_login_pass: true,
-        access_token: access_token,
-        refresh_token: refresh_token,
-        is_first_login: user.is_first_login,
-      });
+      //--------------If first login -------------
+      if (user.is_first_login) {
+        if (password === user.password) {
+          const access_token = jwtAccessTokenGenerate(userData);
+          const refresh_token = jwtRefreshTokenGenerate(userData);
+          console.log("passs");
+          return res.status(200).json({
+            msg: "Login complete",
+            is_login_pass: true,
+            access_token: access_token,
+            refresh_token: refresh_token,
+            is_first_login: user.is_first_login,
+          });
+        } else {
+          return res.status(401).json({
+            msg: "Invalid credential",
+            is_login_pass: false,
+            is_first_login: user.is_first_login,
+          });
+        }
+        //------------------------------------------
+      } else {
+        //-------------if normal login----------------------------------------------------------
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (passwordMatch) {
+          //***jwt use for admin only*/ if add more information in token modify in function too.
+          const access_token = jwtAccessTokenGenerate(userData);
+          const refresh_token = jwtRefreshTokenGenerate(userData);
+          return res.status(200).json({
+            msg: "Login complete",
+            is_login_pass: true,
+            access_token: access_token,
+            refresh_token: refresh_token,
+            is_first_login: user.is_first_login,
+          });
+          //---------------------------------------------------------------------------------------
+        }else{
+          return res.status(401).json({
+            msg: "Invalid credential",
+            is_login_pass: false,
+            is_first_login: user.is_first_login,
+          });
+        }
+      }
     } else {
-      res.status(401).send("Invalid credentials.");
+      return res
+        .status(401)
+        .send({ msg: "Invalid credentials.", is_login_pass: false });
     }
   } catch (err) {
     console.log(err);
-    res.status(500).send("An error occurred while processing your request.");
+    return res.status(500).send({
+      msg: "An error occurred while processing your request.",
+      is_login_pass: false,
+    });
   }
 };
 
