@@ -31,10 +31,9 @@ const getLogin = async (req, res) => {
 
       const userData = {
         admin_id: user.admin_id,
-        is_first_login: user.is_first_login,
       };
 
-      //***jwt use for admin only*/
+      //***jwt use for admin only*/ if add more information in token modify in function too.
       const access_token = jwtAccessTokenGenerate(userData);
       const refresh_token = jwtRefreshTokenGenerate(userData);
       res.status(200).json({
@@ -42,6 +41,7 @@ const getLogin = async (req, res) => {
         is_login_pass: true,
         access_token: access_token,
         refresh_token: refresh_token,
+        is_first_login: user.is_first_login,
       });
     } else {
       res.status(401).send("Invalid credentials.");
