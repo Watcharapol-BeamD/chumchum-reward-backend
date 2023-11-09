@@ -10,7 +10,7 @@ router.get("/customer_info", adminController.getCustomerInfo);
 
 //post request
 router.post("/login", adminController.getLogin);
-router.post("/reset_password", adminController.GetResetAdminPassword);
+router.post("/reset_password", adminController.getResetAdminPassword);
 // router.post("/redeem_reward", rewardController.getRedeemReward);
 
 module.exports = router;

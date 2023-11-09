@@ -7,11 +7,12 @@ const {
   jwtRefreshTokenGenerate,
 } = require("../services/jwtUtils");
 
-const GetResetAdminPassword = async (req, res) => {
-  const { password, adminId } = req.body;
-
+const getResetAdminPassword = async (req, res) => {
+  const { newPassword, current_password, admin_id } = req.body;
+  console.log(req.body);
   try {
-    db.query(adminQueries.resetPassword, [password, adminId]);
+    
+    db.query(adminQueries.resetPassword, [newPassword, admin_id,current_password]);
     res.status(200).send("Reset password success.");
   } catch (err) {
     console.log(err);
@@ -67,5 +68,5 @@ const getCustomerInfo = async (req, res) => {
 module.exports = {
   getLogin,
   getCustomerInfo,
-  GetResetAdminPassword,
+  getResetAdminPassword,
 };
