@@ -38,12 +38,10 @@ const getResetAdminPassword = async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    res
-      .status(500)
-      .send({
-        resetPasswordMsg: "An error occurred while processing your request.",
-        is_first_login: 1,
-      });
+    res.status(500).send({
+      resetPasswordMsg: "An error occurred while processing your request.",
+      is_first_login: 1,
+    });
   }
 };
 

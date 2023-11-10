@@ -1,6 +1,7 @@
 require("dotenv").config();
 const { db } = require("../../db");
 const queries = require("../queries/queries.js");
+
 const deleteFileFromBackend = require("../services/deleteUploadedImage.js");
 const { sendEmail } = require("../services/emailService");
 const { sendLineMessage } = require("../services/lineMessageService.js");
@@ -144,6 +145,7 @@ const addNewReward = async (req, res) => {
   const fileName = generateName + "_" + req.file.originalname;
 
   const {
+    adminId,
     rewardName,
     requirePoints,
     customerGroup,
@@ -155,7 +157,9 @@ const addNewReward = async (req, res) => {
   } = req.body;
 
   try {
-    await db.query(queries.addNewReward, [
+    
+    //get insert reward and get rewardId, insertId = id same as auto increment id
+    const insertValue = await db.query(queries.addNewReward, [
       rewardName,
       requirePoints,
       customerGroup,
@@ -166,6 +170,11 @@ const addNewReward = async (req, res) => {
       description,
       fileName,
     ]);
+
+     //add history
+    const rewardId = insertValue[0].insertId;
+    await db.query(queries.adminActionToReward, ["CREATE",adminId, rewardId]);
+
     ftpService.uploadImageToHost(filePath, fileName);
     // Handle success
     res
