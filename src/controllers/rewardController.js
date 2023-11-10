@@ -192,6 +192,7 @@ const editRewardDetails = async (req, res) => {
   const generateName = randomUUID();
 
   const {
+    adminId,
     rewardName,
     requirePoints,
     customerGroup,
@@ -222,6 +223,9 @@ const editRewardDetails = async (req, res) => {
     //--------------------
 
     try {
+      //add to history
+      await db.query(queries.adminActionToReward, ["UPDATE",adminId, rewardId]);
+ 
       await db.query(queries.updateRewardDetailsAndImage, [
         rewardName,
         requirePoints,
@@ -248,6 +252,9 @@ const editRewardDetails = async (req, res) => {
   } else {
     //-----------------------if update details no image-----------------------
     try {
+    //add to history
+    await db.query(queries.adminActionToReward, ["UPDATE",adminId, rewardId]);
+    
       await db.query(queries.updateRewardDetails, [
         rewardName,
         requirePoints,
