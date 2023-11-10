@@ -18,7 +18,7 @@ const fs = require("fs");
 
 const getReward = async (req, res) => {
   try {
-    const results = await db.query(queries.getReward);
+    const results = await db.query(queries.getRewardAvailableInCurrentTime);
     res.status(200).json(results[0]);
   } catch (err) {
     console.log(err);
