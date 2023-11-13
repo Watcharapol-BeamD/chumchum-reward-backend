@@ -18,8 +18,22 @@ const fs = require("fs");
 
 const getReward = async (req, res) => {
   try {
-    const results = await db.query(queries.getRewardAvailableInCurrentTime);
-    res.status(200).json(results[0]);
+    const results = await db.query(queries.getRewardView);
+
+    const transformedData = results[0].map(row => ({
+      reward_id: row.reward_id,
+      name: row.name,
+      description: row.description,
+      quantity: row.quantity,
+      require_point: row.require_point,
+      status: row.status,
+      event_start_date: row.event_start_date,
+      event_end_date: row.event_end_date,
+      reward_image: row.reward_image,
+      customer_group: row.customer_groups.split(', ').map(group => group.trim())
+    }));
+ 
+    res.status(200).json(transformedData);
   } catch (err) {
     console.log(err);
     res.status(500).send("An error occurred while processing your request.");

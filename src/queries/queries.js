@@ -17,8 +17,14 @@ const decreasePoint = `UPDATE Customers SET points = points - ? WHERE customer_i
 const getRewardImage = `SELECT reward_image FROM Rewards WHERE reward_id = ?;`;
 
 //----------------------reward----------------------------
-const getReward = `SELECT * FROM Rewards`;
-const getRewardAvailableInCurrentTime = `SELECT * FROM Rewards WHERE (CURDATE() >= event_start_date AND CURDATE() <= event_end_date)AND(CURTIME() >= TIME(event_start_date) AND CURTIME() <= TIME(event_end_date));`;
+const getReward = `SELECT r.reward_id,r.name,r.description,r.quantity,r.require_point,r.status,r.event_start_date,r.event_end_date,r.reward_image,GROUP_CONCAT(cg.group_name SEPARATOR ', ') AS customer_groups
+FROM Rewards r JOIN Reward_Customer_Groups rcg ON r.reward_id = rcg.reward_id JOIN Customer_Groups cg ON rcg.group_id = cg.group_id GROUP BY r.reward_id;`;
+
+const getRewardAvailableInCurrentTime = `SELECTr.reward_id,r.name,r.description,r.quantity,r.require_point,r.status,r.event_start_date,r.event_end_date,r.reward_image,
+GROUP_CONCAT(cg.group_name SEPARATOR ', ') AS customer_groups FROM Rewards r JOIN Reward_Customer_Groups rcg ON r.reward_id = rcg.reward_id JOIN
+Customer_Groups cg ON rcg.group_id = cg.group_id WHERE (CURDATE() >= r.event_start_date AND CURDATE() <= r.event_end_date) AND CURTIME() >= TIME(r.event_start_date) AND CURTIME() <= TIME(r.event_end_date) GROUP BY
+r.reward_id;
+`;
 
 const getRewardById = `SELECT * FROM Rewards WHERE reward_id = ?`;
 const addNewReward = `INSERT INTO Rewards (name,require_point, customer_group,quantity, status,event_start_date, event_end_date,description,reward_image)
@@ -36,6 +42,10 @@ const getRefreshToken = `SELECT refresh_token FROM Customers WHERE customer_id =
 const getUpdateRefreshToken = `UPDATE Customers SET refresh_token = ? WHERE customer_id = ?;`;
 // --------------------------------------------------------
 
+//-------------------------Rewards-View-----------------------------------------
+const getRewardView = "SELECT * FROM Rewards_View;";
+const getRewardAvailableInCurrentTimeView =
+  "SELECT * from Rewards_event_Time_length_view";
 module.exports = {
   getAllUser,
   registerNewCustomer,
@@ -59,4 +69,6 @@ module.exports = {
   updateRewardDetailsAndImage,
   adminActionToReward,
   getRewardAvailableInCurrentTime,
+  getRewardView,
+  getRewardAvailableInCurrentTimeView,
 };
