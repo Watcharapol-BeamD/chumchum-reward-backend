@@ -161,7 +161,18 @@ const getRefreshToken = async (req, res) => {
   }
 };
 
- 
+const getCustomerGroup = async (req, res) => {
+  try {
+    const result = await db.query(queries.getCustomerGroup);
+    res.status(200).send(result[0]);
+  } catch (error) {
+    console.log(error);
+    res
+      .status(404)
+      .send({ msg: "An error occurred while processing your request." });
+  }
+};
+
 module.exports = {
   getAllUser,
   getRegisterNewCustomer,
@@ -169,5 +180,5 @@ module.exports = {
   getCustomerById,
   updateCustomerInformation,
   getRefreshToken,
-   
+  getCustomerGroup,
 };
