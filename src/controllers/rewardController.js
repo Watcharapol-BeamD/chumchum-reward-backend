@@ -175,8 +175,6 @@ const getSendEmail = async (req, res) => {
 };
 
 const addNewReward = async (req, res) => {
-  console.log(typeof req.body.customerGroupId);
-  console.log(req.body.customerGroupId.length);
   const { randomUUID } = new ShortUniqueId({ length: 10 });
   const generateName = randomUUID();
 
@@ -234,7 +232,6 @@ const addNewReward = async (req, res) => {
     res.status(500).send("Error while add new reward.");
   }
 };
-
 const editRewardDetails = async (req, res) => {
   const { randomUUID } = new ShortUniqueId({ length: 10 });
   const generateName = randomUUID();
@@ -243,7 +240,7 @@ const editRewardDetails = async (req, res) => {
     adminId,
     rewardName,
     requirePoints,
-    customerGroup,
+    customerGroupId,
     quantity,
     status,
     startDate,
@@ -252,6 +249,7 @@ const editRewardDetails = async (req, res) => {
     rewardId,
     imageName,
     oldImageName,
+    groupToRemove,
   } = req.body;
 
   console.log(req.body);
@@ -281,7 +279,7 @@ const editRewardDetails = async (req, res) => {
       await db.query(queries.updateRewardDetailsAndImage, [
         rewardName,
         requirePoints,
-        customerGroup,
+        // customerGroup,
         quantity,
         status,
         startDate,
@@ -290,6 +288,24 @@ const editRewardDetails = async (req, res) => {
         fileName,
         rewardId,
       ]);
+      // // Remove Group
+      // groupToRemove.map(async (value) => {
+      //   console.log(typeof value);
+      //   await db.query(queries.removeCustomerGroupFromReward, [
+      //     parseInt(value, 10),
+      //   ]);
+      // });
+
+      // // Update new group
+      // customerGroupId.map(async (value) => {
+      //   console.log("CCCCCCCCCCC-------------------------------------");
+      //   console.log(typeof value);
+      //   await db.query(queries.addCustomerGroupToReward, [
+      //     rewardId,
+      //     parseInt(value, 10),
+      //   ]);
+      // });
+
       console.log("-----------upload");
       ftpService.uploadImageToHost(filePath, fileName).then(() => {
         return res
@@ -314,7 +330,7 @@ const editRewardDetails = async (req, res) => {
       await db.query(queries.updateRewardDetails, [
         rewardName,
         requirePoints,
-        customerGroup,
+        // customerGroup,
         quantity,
         status,
         startDate,

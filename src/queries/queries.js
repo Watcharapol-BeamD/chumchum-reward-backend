@@ -16,7 +16,6 @@ const increasePoint = `UPDATE Customers SET points = points + ? WHERE customer_i
 const decreasePoint = `UPDATE Customers SET points = points - ? WHERE customer_id = ?;`;
 const getRewardImage = `SELECT reward_image FROM Rewards WHERE reward_id = ?;`;
 const getCustomerGroup = `SELECT * FROM Customer_Groups`;
-
 //----------------------reward----------------------------
 const getReward = `SELECT r.reward_id,r.name,r.description,r.quantity,r.require_point,r.status,r.event_start_date,r.event_end_date,r.reward_image,GROUP_CONCAT(cg.group_name SEPARATOR ', ') AS customer_group_name,
 GROUP_CONCAT(cg.group_id SEPARATOR ', ') AS customer_group_id
@@ -35,10 +34,11 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 const addCustomerGroupToReward = `INSERT INTO Reward_Customer_Groups (reward_id, group_id) VALUES (?, ?);`;
 
 const decreaseReward = `UPDATE Rewards SET quantity = quantity - ? WHERE reward_id = ?;`;
-const updateRewardDetails = `UPDATE Rewards SET name = ?, require_point=?,customer_group=?, quantity=?,status=?,event_start_date=?,event_end_date=?,description=? WHERE reward_id = ?;`;
-const updateRewardDetailsAndImage = `UPDATE Rewards SET name = ?, require_point=?,customer_group=?, quantity=?,status=?,event_start_date=?,event_end_date=?,description=?,reward_image=? WHERE reward_id = ?;`;
+const updateRewardDetails = `UPDATE Rewards SET name = ?, require_point=?, quantity=?,status=?,event_start_date=?,event_end_date=?,description=? WHERE reward_id = ?;`;
+const updateRewardDetailsAndImage = `UPDATE Rewards SET name = ?, require_point=?, quantity=?,status=?,event_start_date=?,event_end_date=?,description=?,reward_image=? WHERE reward_id = ?;`;
 const adminActionToReward = `INSERT INTO Admin_Reward_Histories (action, fk_admin_id, fk_reward_id)VALUES (?, ?, ?);`;
-
+const getCustomerGroupOfReward = `SELECT * FROM Reward_Customer_Groups WHERE reward_id = ?`;
+const removeCustomerGroupFromReward = `DELETE FROM Reward_Customer_Groups WHERE group_id=?`;
 //----------------------reward-End---------------------------
 
 //-------------------------Rewards-View-----------------------------------------
@@ -79,4 +79,6 @@ module.exports = {
   getRewardAvailableInCurrentTimeView,
   getCustomerGroup,
   addCustomerGroupToReward,
+  getCustomerGroupOfReward,
+  removeCustomerGroupFromReward,
 };
