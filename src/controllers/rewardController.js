@@ -153,8 +153,8 @@ const getSendEmail = async (req, res) => {
 };
 
 const addNewReward = async (req, res) => {
-  console.log(typeof req.body.customer_group);
-  console.log(req.body.customer_group.length);
+  console.log(typeof req.body.customerGroupId);
+  console.log(req.body.customerGroupId.length);
   const { randomUUID } = new ShortUniqueId({ length: 10 });
   const generateName = randomUUID();
 
@@ -167,7 +167,7 @@ const addNewReward = async (req, res) => {
     adminId,
     rewardName,
     requirePoints,
-    customer_group,
+    customerGroupId,
     quantity,
     status,
     startDate,
@@ -190,7 +190,7 @@ const addNewReward = async (req, res) => {
     ]);
 
     //add customer group to reward.
-    customer_group.map(async(value) => {
+    customerGroupId.map(async(value) => {
      await db.query(queries.addCustomerGroupToReward,[insertValue[0].insertId,value])
     });
 
