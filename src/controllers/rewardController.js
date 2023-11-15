@@ -64,13 +64,11 @@ const getRewardById = async (req, res) => {
       reward_image: row.reward_image,
       customer_group_id: row.customer_group_id
         .split(", ")
-        .map((group) => group.trim()),
+        .map((group) => parseInt(group.trim(), 10)),
       customer_group_name: row.customer_group_name
         .split(", ")
         .map((group) => group.trim()),
     }));
-
-
 
     res.status(200).json(transformedData[0]);
   } catch (err) {
