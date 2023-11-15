@@ -19,7 +19,7 @@ const fs = require("fs");
 const getReward = async (req, res) => {
   try {
     const results = await db.query(queries.getRewardView);
-
+    console.log(results[0]);
     const transformedData = results[0].map((row) => ({
       reward_id: row.reward_id,
       name: row.name,
@@ -30,6 +30,9 @@ const getReward = async (req, res) => {
       event_start_date: row.event_start_date,
       event_end_date: row.event_end_date,
       reward_image: row.reward_image,
+      customer_group_id: row.customer_group_id
+        .split(", ")
+        .map((group) => group.trim()),
       customer_group_name: row.customer_group_name
         .split(", ")
         .map((group) => group.trim()),
@@ -190,8 +193,11 @@ const addNewReward = async (req, res) => {
     ]);
 
     //add customer group to reward.
-    customerGroupId.map(async(value) => {
-     await db.query(queries.addCustomerGroupToReward,[insertValue[0].insertId,value])
+    customerGroupId.map(async (value) => {
+      await db.query(queries.addCustomerGroupToReward, [
+        insertValue[0].insertId,
+        value,
+      ]);
     });
 
     //add history && insertValue[0].insertId is reward id
