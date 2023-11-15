@@ -20,7 +20,7 @@ const getReward = async (req, res) => {
   try {
     const results = await db.query(queries.getRewardView);
 
-    const transformedData = results[0].map(row => ({
+    const transformedData = results[0].map((row) => ({
       reward_id: row.reward_id,
       name: row.name,
       description: row.description,
@@ -30,9 +30,11 @@ const getReward = async (req, res) => {
       event_start_date: row.event_start_date,
       event_end_date: row.event_end_date,
       reward_image: row.reward_image,
-      customer_group: row.customer_groups.split(', ').map(group => group.trim())
+      customer_group: row.customer_groups
+        .split(", ")
+        .map((group) => group.trim()),
     }));
- 
+
     res.status(200).json(transformedData);
   } catch (err) {
     console.log(err);
@@ -151,8 +153,11 @@ const getSendEmail = async (req, res) => {
 };
 
 const addNewReward = async (req, res) => {
+  console.log(typeof req.body.customer_group);
+  console.log(req.body.customer_group.length);
   const { randomUUID } = new ShortUniqueId({ length: 10 });
   const generateName = randomUUID();
+
   // Get the path to the uploaded file
   const filePath = req.file.path;
   //concat image name to prevent image name duplicate.
@@ -162,7 +167,7 @@ const addNewReward = async (req, res) => {
     adminId,
     rewardName,
     requirePoints,
-    customerGroup,
+    customer_group,
     quantity,
     status,
     startDate,
@@ -171,12 +176,11 @@ const addNewReward = async (req, res) => {
   } = req.body;
 
   try {
-    
     //get insert reward and get rewardId, insertId = id same as auto increment id
     const insertValue = await db.query(queries.addNewReward, [
       rewardName,
       requirePoints,
-      customerGroup,
+      // customerGroup,
       quantity,
       status,
       startDate,
@@ -185,9 +189,14 @@ const addNewReward = async (req, res) => {
       fileName,
     ]);
 
-     //add history
+    //add customer group to reward.
+    customer_group.map(async(value) => {
+     await db.query(queries.addCustomerGroupToReward,[insertValue[0].insertId,value])
+    });
+
+    //add history && insertValue[0].insertId is reward id
     const rewardId = insertValue[0].insertId;
-    await db.query(queries.adminActionToReward, ["CREATE",adminId, rewardId]);
+    await db.query(queries.adminActionToReward, ["CREATE", adminId, rewardId]);
 
     ftpService.uploadImageToHost(filePath, fileName);
     // Handle success
@@ -238,8 +247,12 @@ const editRewardDetails = async (req, res) => {
 
     try {
       //add to history
-      await db.query(queries.adminActionToReward, ["UPDATE",adminId, rewardId]);
- 
+      await db.query(queries.adminActionToReward, [
+        "UPDATE",
+        adminId,
+        rewardId,
+      ]);
+
       await db.query(queries.updateRewardDetailsAndImage, [
         rewardName,
         requirePoints,
@@ -266,9 +279,13 @@ const editRewardDetails = async (req, res) => {
   } else {
     //-----------------------if update details no image-----------------------
     try {
-    //add to history
-    await db.query(queries.adminActionToReward, ["UPDATE",adminId, rewardId]);
-    
+      //add to history
+      await db.query(queries.adminActionToReward, [
+        "UPDATE",
+        adminId,
+        rewardId,
+      ]);
+
       await db.query(queries.updateRewardDetails, [
         rewardName,
         requirePoints,
