@@ -30,7 +30,7 @@ const getReward = async (req, res) => {
       event_start_date: row.event_start_date,
       event_end_date: row.event_end_date,
       reward_image: row.reward_image,
-      customer_group: row.customer_groups
+      customer_group_name: row.customer_group_name
         .split(", ")
         .map((group) => group.trim()),
     }));
