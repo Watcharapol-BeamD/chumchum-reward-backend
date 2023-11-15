@@ -50,8 +50,29 @@ const getRewardById = async (req, res) => {
 
   try {
     const results = await db.query(queries.getRewardById, [reward_id]);
-    const reward = results[0][0];
-    res.status(200).json(reward);
+    // const reward = results[0][0];
+
+    const transformedData = results[0].map((row) => ({
+      reward_id: row.reward_id,
+      name: row.name,
+      description: row.description,
+      quantity: row.quantity,
+      require_point: row.require_point,
+      status: row.status,
+      event_start_date: row.event_start_date,
+      event_end_date: row.event_end_date,
+      reward_image: row.reward_image,
+      customer_group_id: row.customer_group_id
+        .split(", ")
+        .map((group) => group.trim()),
+      customer_group_name: row.customer_group_name
+        .split(", ")
+        .map((group) => group.trim()),
+    }));
+
+
+
+    res.status(200).json(transformedData[0]);
   } catch (err) {
     console.log(err);
     res.status(500).send("An error occurred while processing your request.");
