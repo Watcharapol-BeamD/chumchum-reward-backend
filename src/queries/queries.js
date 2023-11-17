@@ -1,5 +1,7 @@
-const getAllUser = "SELECT * FROM Customers;";
-const getCustomerById = "SELECT * FROM Customers WHERE customer_id = ?";
+const getAllUser =
+  "SELECT * FROM Customers c JOIN Customer_Groups cg ON c.fk_group_id = cg.group_id ";
+const getCustomerById = `SELECT * FROM Customers c JOIN Customer_Groups cg ON c.fk_group_id = cg.group_id WHERE customer_id = ?;`;
+const getCustomerInfoList = `SELECT * FROM customer_info;`;
 const registerNewCustomer =
   "INSERT INTO Customers (customer_id, retailer_name, bplus_code, phone_number,refresh_token)VALUES (?, ?, ?, ?,?)";
 
@@ -83,4 +85,5 @@ module.exports = {
   addCustomerGroupToReward,
   getCustomerGroupOfReward,
   removeCustomerGroupFromReward,
+  getCustomerInfoList,
 };

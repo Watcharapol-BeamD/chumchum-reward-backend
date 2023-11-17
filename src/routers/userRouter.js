@@ -6,6 +6,7 @@ const auth = require('../middleware/auth')
 //get request
 router.get("/", userController.getAllUser);
 router.get("/get_customer_group",userController.getCustomerGroup)
+router.get("/customer_info", userController.getCustomerInfo);
 
 //post request
 router.post("/register", userController.getRegisterNewCustomer);
