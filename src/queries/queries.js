@@ -38,7 +38,7 @@ const updateRewardDetails = `UPDATE Rewards SET name = ?, require_point=?, quant
 const updateRewardDetailsAndImage = `UPDATE Rewards SET name = ?, require_point=?, quantity=?,status=?,event_start_date=?,event_end_date=?,description=?,reward_image=? WHERE reward_id = ?;`;
 const adminActionToReward = `INSERT INTO Admin_Reward_Histories (action, fk_admin_id, fk_reward_id)VALUES (?, ?, ?);`;
 const getCustomerGroupOfReward = `SELECT * FROM Reward_Customer_Groups WHERE reward_id = ?`;
-const removeCustomerGroupFromReward = `DELETE FROM Reward_Customer_Groups WHERE group_id=?`;
+const removeCustomerGroupFromReward = `DELETE FROM Reward_Customer_Groups WHERE reward_id = ? AND group_id=? `;
 //----------------------reward-End---------------------------
 
 //-------------------------Rewards-View-----------------------------------------

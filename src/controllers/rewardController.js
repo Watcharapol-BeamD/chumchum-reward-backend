@@ -288,24 +288,92 @@ const editRewardDetails = async (req, res) => {
         fileName,
         rewardId,
       ]);
-      // // Remove Group
-      // groupToRemove.map(async (value) => {
-      //   console.log(typeof value);
-      //   await db.query(queries.removeCustomerGroupFromReward, [
-      //     parseInt(value, 10),
-      //   ]);
-      // });
+      //--------------P-nut--------------
+      // // Remove All Group
+      // const customerGroupOfReward = await db.query(
+      //   queries.getCustomerGroupOfReward,
+      //   [rewardId]
+      // );
+      // const groupIdsArray = customerGroupOfReward[0].map(
+      //   (item) => item.group_id
+      // );
 
-      // // Update new group
+      // Promise.all(
+      //   groupIdsArray.map(async (value) => {
+      //     await db.query(queries.removeCustomerGroupFromReward, [
+      //       rewardId,
+      //       value,
+      //     ]);
+      //   })
+      // );
+
+      // //add customer group to reward.
       // customerGroupId.map(async (value) => {
-      //   console.log("CCCCCCCCCCC-------------------------------------");
-      //   console.log(typeof value);
-      //   await db.query(queries.addCustomerGroupToReward, [
-      //     rewardId,
-      //     parseInt(value, 10),
-      //   ]);
+      //   await db.query(queries.addCustomerGroupToReward, [rewardId, value]);
+      // });
+      //--------------------------------
+      console.log("To Remove");
+      console.log(groupToRemove);
+      console.log(customerGroupId);
+      // // Remove Group
+      // const removeGroup = () => {
+      //   if (groupToRemove === undefined) {
+      //     return;
+      //   }
+      //   groupToRemove.map(async (value) => {
+      //     console.log(typeof value);
+      //     await db.query(queries.removeCustomerGroupFromReward, [
+      //       rewardId,
+      //       parseInt(value, 10),
+      //     ]);
+      //   });
+      // };
+
+      // Promise.all(removeGroup()).then(() => {
+      //   // Update new group
+      //   customerGroupId.map(async (value) => {
+      //     console.log("CCCCCCCCCCC-------------------------------------");
+      //     console.log(typeof value);
+      //     await db.query(queries.addCustomerGroupToReward, [
+      //       rewardId,
+      //       parseInt(value, 10),
+      //     ]);
+      //   });
       // });
 
+//-------------New-------------------
+// Remove Group
+const removeGroup = () => {
+  if (groupToRemove === undefined) {
+    return Promise.resolve(); // Return a resolved Promise if there's nothing to remove
+  }
+
+  const removePromises = groupToRemove.map(async (value) => {
+    console.log(typeof value);
+    await db.query(queries.removeCustomerGroupFromReward, [
+      rewardId,
+      parseInt(value, 10),
+    ]);
+  });
+
+  return Promise.all(removePromises);
+};
+
+removeGroup().then(() => {
+  // Update new group
+  const addPromises = customerGroupId.map(async (value) => {
+    await db.query(queries.addCustomerGroupToReward, [
+      rewardId,
+      parseInt(value, 10),
+    ]);
+  });
+
+  return Promise.all(addPromises);
+}).catch((error) => {
+  console.error("Error:", error);
+});
+
+//------------------------------------
       console.log("-----------upload");
       ftpService.uploadImageToHost(filePath, fileName).then(() => {
         return res
