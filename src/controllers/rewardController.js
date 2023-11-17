@@ -19,7 +19,7 @@ const fs = require("fs");
 const getReward = async (req, res) => {
   try {
     const results = await db.query(queries.getRewardView);
-    console.log(results[0]);
+
     const transformedData = results[0].map((row) => ({
       reward_id: row.reward_id,
       name: row.name,
@@ -77,6 +77,20 @@ const getRewardById = async (req, res) => {
   }
 };
 
+const getRewardByEventTimeAndCustomerGroup = async (req, res) => {
+  const { customerGroupId } = req.body;
+  try {
+    const results = await db.query(
+      queries.getRewardsByEventTimeAndCustomerGroupView,
+      [customerGroupId]
+    );
+    return res.status(200).send(results[0]);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("An error occurred while processing your request.");
+  }
+};
+
 const getRedeemReward = async (req, res) => {
   const {
     customer_id,
@@ -118,7 +132,6 @@ const getRedeemReward = async (req, res) => {
         [customer_id]
       );
       const redeem_timestamp = redeem_timestamp_result[0][0].redeem_timestamp;
-      console.log(redeem_timestamp);
 
       //---------------------get reward image------------------------
       const reward_image_result = await db.query(queries.getRewardImage, [
@@ -233,8 +246,6 @@ const addNewReward = async (req, res) => {
   }
 };
 
-
-
 const editRewardDetails = async (req, res) => {
   const { randomUUID } = new ShortUniqueId({ length: 10 });
   const generateName = randomUUID();
@@ -255,40 +266,41 @@ const editRewardDetails = async (req, res) => {
     groupToRemove,
   } = req.body;
 
-  console.log(req.body);
-//-------------New-------------------
-// Remove Group
-const removeGroup = () => {
-  if (groupToRemove === undefined) {
-    return Promise.resolve(); // Return a resolved Promise if there's nothing to remove
-  }
+  //-------------New-------------------
+  // Remove Group
+  const removeGroup = () => {
+    if (groupToRemove === undefined) {
+      return Promise.resolve(); // Return a resolved Promise if there's nothing to remove
+    }
 
-  const removePromises = groupToRemove.map(async (value) => {
-    console.log(typeof value);
-    await db.query(queries.removeCustomerGroupFromReward, [
-      rewardId,
-      parseInt(value, 10),
-    ]);
-  });
+    const removePromises = groupToRemove.map(async (value) => {
+      console.log(typeof value);
+      await db.query(queries.removeCustomerGroupFromReward, [
+        rewardId,
+        parseInt(value, 10),
+      ]);
+    });
 
-  return Promise.all(removePromises);
-};
+    return Promise.all(removePromises);
+  };
 
-removeGroup().then(() => {
-  // Update new group
-  const addPromises = customerGroupId.map(async (value) => {
-    await db.query(queries.addCustomerGroupToReward, [
-      rewardId,
-      parseInt(value, 10),
-    ]);
-  });
+  removeGroup()
+    .then(() => {
+      // Update new group
+      const addPromises = customerGroupId.map(async (value) => {
+        await db.query(queries.addCustomerGroupToReward, [
+          rewardId,
+          parseInt(value, 10),
+        ]);
+      });
 
-  return Promise.all(addPromises);
-}).catch((error) => {
-  console.error("Error:", error);
-});
+      return Promise.all(addPromises);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
 
-//------------------------------------
+  //------------------------------------
 
   //-----------------------if update details with image-----------------------
   //Check has image if has do this function
@@ -325,7 +337,7 @@ removeGroup().then(() => {
         fileName,
         rewardId,
       ]);
- 
+
       console.log("-----------upload");
       ftpService.uploadImageToHost(filePath, fileName).then(() => {
         return res
@@ -379,4 +391,5 @@ module.exports = {
   getRewardById,
   addNewReward,
   editRewardDetails,
+  getRewardByEventTimeAndCustomerGroup,
 };

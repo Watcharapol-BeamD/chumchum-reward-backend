@@ -4,7 +4,7 @@ const getCustomerById = `SELECT * FROM Customers c JOIN Customer_Groups cg ON c.
 const getCustomerInfoList = `SELECT * FROM customer_info;`;
 const registerNewCustomer =
   "INSERT INTO Customers (customer_id, retailer_name, bplus_code, phone_number,refresh_token,fk_group_id)VALUES (?, ?, ?, ?,?,?)";
- 
+
 const getCheckUserExist =
   "SELECT COUNT(*) AS count FROM Customers WHERE Customer_id =?";
 
@@ -23,12 +23,10 @@ const getReward = `SELECT r.reward_id,r.name,r.description,r.quantity,r.require_
 GROUP_CONCAT(cg.group_id SEPARATOR ', ') AS customer_group_id
 FROM Rewards r JOIN Reward_Customer_Groups rcg ON r.reward_id = rcg.reward_id JOIN Customer_Groups cg ON rcg.group_id = cg.group_id GROUP BY r.reward_id;
 `;
-
+ 
 const getRewardAvailableInCurrentTime = `SELECTr.reward_id,r.name,r.description,r.quantity,r.require_point,r.status,r.event_start_date,r.event_end_date,r.reward_image,
-GROUP_CONCAT(cg.group_name SEPARATOR ', ') AS customer_groups FROM Rewards r JOIN Reward_Customer_Groups rcg ON r.reward_id = rcg.reward_id JOIN
-Customer_Groups cg ON rcg.group_id = cg.group_id WHERE (CURDATE() >= r.event_start_date AND CURDATE() <= r.event_end_date) AND CURTIME() >= TIME(r.event_start_date) AND CURTIME() <= TIME(r.event_end_date) GROUP BY
-r.reward_id;
-`;
+GROUP_CONCAT(cg.group_name SEPARATOR ', ') AS customer_groups FROM Rewards r JOIN Reward_Customer_Groups rcg ON r.reward_id = rcg.reward_id JOIN Customer_Groups cg ON rcg.group_id = cg.group_id 
+WHERE (NOW() >= r.event_start_date AND NOW() <= r.event_end_date) GROUP BYr.reward_id;`;
 
 const getRewardById = `SELECT * FROM Rewards_View WHERE reward_id = ?`;
 const addNewReward = `INSERT INTO Rewards (name,require_point,quantity, status,event_start_date, event_end_date,description,reward_image)
@@ -49,6 +47,7 @@ const removeCustomerGroupFromReward = `DELETE FROM Reward_Customer_Groups WHERE 
 const getRewardView = "SELECT * FROM Rewards_View;";
 const getRewardAvailableInCurrentTimeView =
   "SELECT * from Rewards_event_Time_length_view";
+const getRewardsByEventTimeAndCustomerGroupView = `select * from Rewards_event_Time_length_BY_Customer_Group_View WHERE group_id = ? ;`;
 
 //----------------------------useless----------------------------
 const addNewRefreshToken = `UPDATE Customers SET refresh_token = ? WHERE customer_id = ?;`;
@@ -86,4 +85,5 @@ module.exports = {
   getCustomerGroupOfReward,
   removeCustomerGroupFromReward,
   getCustomerInfoList,
+  getRewardsByEventTimeAndCustomerGroupView,
 };
