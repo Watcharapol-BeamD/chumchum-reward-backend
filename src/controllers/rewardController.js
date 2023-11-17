@@ -232,6 +232,9 @@ const addNewReward = async (req, res) => {
     res.status(500).send("Error while add new reward.");
   }
 };
+
+
+
 const editRewardDetails = async (req, res) => {
   const { randomUUID } = new ShortUniqueId({ length: 10 });
   const generateName = randomUUID();
@@ -253,6 +256,40 @@ const editRewardDetails = async (req, res) => {
   } = req.body;
 
   console.log(req.body);
+//-------------New-------------------
+// Remove Group
+const removeGroup = () => {
+  if (groupToRemove === undefined) {
+    return Promise.resolve(); // Return a resolved Promise if there's nothing to remove
+  }
+
+  const removePromises = groupToRemove.map(async (value) => {
+    console.log(typeof value);
+    await db.query(queries.removeCustomerGroupFromReward, [
+      rewardId,
+      parseInt(value, 10),
+    ]);
+  });
+
+  return Promise.all(removePromises);
+};
+
+removeGroup().then(() => {
+  // Update new group
+  const addPromises = customerGroupId.map(async (value) => {
+    await db.query(queries.addCustomerGroupToReward, [
+      rewardId,
+      parseInt(value, 10),
+    ]);
+  });
+
+  return Promise.all(addPromises);
+}).catch((error) => {
+  console.error("Error:", error);
+});
+
+//------------------------------------
+
   //-----------------------if update details with image-----------------------
   //Check has image if has do this function
   if (req.file !== undefined) {
@@ -288,92 +325,7 @@ const editRewardDetails = async (req, res) => {
         fileName,
         rewardId,
       ]);
-      //--------------P-nut--------------
-      // // Remove All Group
-      // const customerGroupOfReward = await db.query(
-      //   queries.getCustomerGroupOfReward,
-      //   [rewardId]
-      // );
-      // const groupIdsArray = customerGroupOfReward[0].map(
-      //   (item) => item.group_id
-      // );
-
-      // Promise.all(
-      //   groupIdsArray.map(async (value) => {
-      //     await db.query(queries.removeCustomerGroupFromReward, [
-      //       rewardId,
-      //       value,
-      //     ]);
-      //   })
-      // );
-
-      // //add customer group to reward.
-      // customerGroupId.map(async (value) => {
-      //   await db.query(queries.addCustomerGroupToReward, [rewardId, value]);
-      // });
-      //--------------------------------
-      console.log("To Remove");
-      console.log(groupToRemove);
-      console.log(customerGroupId);
-      // // Remove Group
-      // const removeGroup = () => {
-      //   if (groupToRemove === undefined) {
-      //     return;
-      //   }
-      //   groupToRemove.map(async (value) => {
-      //     console.log(typeof value);
-      //     await db.query(queries.removeCustomerGroupFromReward, [
-      //       rewardId,
-      //       parseInt(value, 10),
-      //     ]);
-      //   });
-      // };
-
-      // Promise.all(removeGroup()).then(() => {
-      //   // Update new group
-      //   customerGroupId.map(async (value) => {
-      //     console.log("CCCCCCCCCCC-------------------------------------");
-      //     console.log(typeof value);
-      //     await db.query(queries.addCustomerGroupToReward, [
-      //       rewardId,
-      //       parseInt(value, 10),
-      //     ]);
-      //   });
-      // });
-
-//-------------New-------------------
-// Remove Group
-const removeGroup = () => {
-  if (groupToRemove === undefined) {
-    return Promise.resolve(); // Return a resolved Promise if there's nothing to remove
-  }
-
-  const removePromises = groupToRemove.map(async (value) => {
-    console.log(typeof value);
-    await db.query(queries.removeCustomerGroupFromReward, [
-      rewardId,
-      parseInt(value, 10),
-    ]);
-  });
-
-  return Promise.all(removePromises);
-};
-
-removeGroup().then(() => {
-  // Update new group
-  const addPromises = customerGroupId.map(async (value) => {
-    await db.query(queries.addCustomerGroupToReward, [
-      rewardId,
-      parseInt(value, 10),
-    ]);
-  });
-
-  return Promise.all(addPromises);
-}).catch((error) => {
-  console.error("Error:", error);
-});
-
-//------------------------------------
+ 
       console.log("-----------upload");
       ftpService.uploadImageToHost(filePath, fileName).then(() => {
         return res
