@@ -66,14 +66,17 @@ const getRegisterNewCustomer = async (req, res) => {
     const refresh_token = jwtRefreshTokenGenerate(user);
 
     // Insert the new user into the database
+    const defaultCustomerGroup = 1
+
     await db.query(queries.registerNewCustomer, [
       customer_id,
       retailer_name,
       bplus_code,
       phone_number,
       refresh_token,
+      defaultCustomerGroup
     ]);
-
+ 
     res.status(201).json({
       msg: "Registration successful",
       isRegisterPass: true,
