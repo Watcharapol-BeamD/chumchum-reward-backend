@@ -18,8 +18,27 @@ const fs = require("fs");
 
 const getReward = async (req, res) => {
   try {
-    const results = await db.query(queries.getRewardAvailableInCurrentTime);
-    res.status(200).json(results[0]);
+    const results = await db.query(queries.getRewardView);
+    console.log(results[0]);
+    const transformedData = results[0].map((row) => ({
+      reward_id: row.reward_id,
+      name: row.name,
+      description: row.description,
+      quantity: row.quantity,
+      require_point: row.require_point,
+      status: row.status,
+      event_start_date: row.event_start_date,
+      event_end_date: row.event_end_date,
+      reward_image: row.reward_image,
+      customer_group_id: row.customer_group_id
+        .split(", ")
+        .map((group) => group.trim()),
+      customer_group_name: row.customer_group_name
+        .split(", ")
+        .map((group) => group.trim()),
+    }));
+
+    res.status(200).json(transformedData);
   } catch (err) {
     console.log(err);
     res.status(500).send("An error occurred while processing your request.");
@@ -31,8 +50,27 @@ const getRewardById = async (req, res) => {
 
   try {
     const results = await db.query(queries.getRewardById, [reward_id]);
-    const reward = results[0][0];
-    res.status(200).json(reward);
+    // const reward = results[0][0];
+
+    const transformedData = results[0].map((row) => ({
+      reward_id: row.reward_id,
+      name: row.name,
+      description: row.description,
+      quantity: row.quantity,
+      require_point: row.require_point,
+      status: row.status,
+      event_start_date: row.event_start_date,
+      event_end_date: row.event_end_date,
+      reward_image: row.reward_image,
+      customer_group_id: row.customer_group_id
+        .split(", ")
+        .map((group) => parseInt(group.trim(), 10)),
+      customer_group_name: row.customer_group_name
+        .split(", ")
+        .map((group) => group.trim()),
+    }));
+
+    res.status(200).json(transformedData[0]);
   } catch (err) {
     console.log(err);
     res.status(500).send("An error occurred while processing your request.");
@@ -139,6 +177,7 @@ const getSendEmail = async (req, res) => {
 const addNewReward = async (req, res) => {
   const { randomUUID } = new ShortUniqueId({ length: 10 });
   const generateName = randomUUID();
+
   // Get the path to the uploaded file
   const filePath = req.file.path;
   //concat image name to prevent image name duplicate.
@@ -148,7 +187,7 @@ const addNewReward = async (req, res) => {
     adminId,
     rewardName,
     requirePoints,
-    customerGroup,
+    customerGroupId,
     quantity,
     status,
     startDate,
@@ -157,12 +196,11 @@ const addNewReward = async (req, res) => {
   } = req.body;
 
   try {
-    
     //get insert reward and get rewardId, insertId = id same as auto increment id
     const insertValue = await db.query(queries.addNewReward, [
       rewardName,
       requirePoints,
-      customerGroup,
+      // customerGroup,
       quantity,
       status,
       startDate,
@@ -171,9 +209,17 @@ const addNewReward = async (req, res) => {
       fileName,
     ]);
 
-     //add history
+    //add customer group to reward.
+    customerGroupId.map(async (value) => {
+      await db.query(queries.addCustomerGroupToReward, [
+        insertValue[0].insertId,
+        value,
+      ]);
+    });
+
+    //add history && insertValue[0].insertId is reward id
     const rewardId = insertValue[0].insertId;
-    await db.query(queries.adminActionToReward, ["CREATE",adminId, rewardId]);
+    await db.query(queries.adminActionToReward, ["CREATE", adminId, rewardId]);
 
     ftpService.uploadImageToHost(filePath, fileName);
     // Handle success
@@ -187,6 +233,8 @@ const addNewReward = async (req, res) => {
   }
 };
 
+
+
 const editRewardDetails = async (req, res) => {
   const { randomUUID } = new ShortUniqueId({ length: 10 });
   const generateName = randomUUID();
@@ -195,7 +243,7 @@ const editRewardDetails = async (req, res) => {
     adminId,
     rewardName,
     requirePoints,
-    customerGroup,
+    customerGroupId,
     quantity,
     status,
     startDate,
@@ -204,9 +252,44 @@ const editRewardDetails = async (req, res) => {
     rewardId,
     imageName,
     oldImageName,
+    groupToRemove,
   } = req.body;
 
   console.log(req.body);
+//-------------New-------------------
+// Remove Group
+const removeGroup = () => {
+  if (groupToRemove === undefined) {
+    return Promise.resolve(); // Return a resolved Promise if there's nothing to remove
+  }
+
+  const removePromises = groupToRemove.map(async (value) => {
+    console.log(typeof value);
+    await db.query(queries.removeCustomerGroupFromReward, [
+      rewardId,
+      parseInt(value, 10),
+    ]);
+  });
+
+  return Promise.all(removePromises);
+};
+
+removeGroup().then(() => {
+  // Update new group
+  const addPromises = customerGroupId.map(async (value) => {
+    await db.query(queries.addCustomerGroupToReward, [
+      rewardId,
+      parseInt(value, 10),
+    ]);
+  });
+
+  return Promise.all(addPromises);
+}).catch((error) => {
+  console.error("Error:", error);
+});
+
+//------------------------------------
+
   //-----------------------if update details with image-----------------------
   //Check has image if has do this function
   if (req.file !== undefined) {
@@ -224,12 +307,16 @@ const editRewardDetails = async (req, res) => {
 
     try {
       //add to history
-      await db.query(queries.adminActionToReward, ["UPDATE",adminId, rewardId]);
- 
+      await db.query(queries.adminActionToReward, [
+        "UPDATE",
+        adminId,
+        rewardId,
+      ]);
+
       await db.query(queries.updateRewardDetailsAndImage, [
         rewardName,
         requirePoints,
-        customerGroup,
+        // customerGroup,
         quantity,
         status,
         startDate,
@@ -238,6 +325,7 @@ const editRewardDetails = async (req, res) => {
         fileName,
         rewardId,
       ]);
+ 
       console.log("-----------upload");
       ftpService.uploadImageToHost(filePath, fileName).then(() => {
         return res
@@ -252,13 +340,17 @@ const editRewardDetails = async (req, res) => {
   } else {
     //-----------------------if update details no image-----------------------
     try {
-    //add to history
-    await db.query(queries.adminActionToReward, ["UPDATE",adminId, rewardId]);
-    
+      //add to history
+      await db.query(queries.adminActionToReward, [
+        "UPDATE",
+        adminId,
+        rewardId,
+      ]);
+
       await db.query(queries.updateRewardDetails, [
         rewardName,
         requirePoints,
-        customerGroup,
+        // customerGroup,
         quantity,
         status,
         startDate,

@@ -27,6 +27,19 @@ const getCustomerById = async (req, res) => {
   }
 };
 
+const getCustomerInfo = async (req, res) => {
+  // console.log("test")
+  try {
+    const results = await db.query(queries.getCustomerInfoList);
+
+    const customerList = results[0];
+    res.status(200).json(customerList);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("An error occurred while processing your request.");
+  }
+};
+
 const getRegisterNewCustomer = async (req, res) => {
   const { customer_id, retailer_name, bplus_code, phone_number } = req.body;
   console.log(req.body);
@@ -161,7 +174,18 @@ const getRefreshToken = async (req, res) => {
   }
 };
 
- 
+const getCustomerGroup = async (req, res) => {
+  try {
+    const result = await db.query(queries.getCustomerGroup);
+    res.status(200).send(result[0]);
+  } catch (error) {
+    console.log(error);
+    res
+      .status(404)
+      .send({ msg: "An error occurred while processing your request." });
+  }
+};
+
 module.exports = {
   getAllUser,
   getRegisterNewCustomer,
@@ -169,5 +193,6 @@ module.exports = {
   getCustomerById,
   updateCustomerInformation,
   getRefreshToken,
-   
+  getCustomerGroup,
+  getCustomerInfo,
 };
