@@ -265,7 +265,9 @@ const editRewardDetails = async (req, res) => {
     oldImageName,
     groupToRemove,
   } = req.body;
+ 
 
+  
   //-------------New-------------------
   // Remove Group
   const removeGroup = () => {
@@ -284,8 +286,7 @@ const editRewardDetails = async (req, res) => {
     return Promise.all(removePromises);
   };
 
-  removeGroup()
-    .then(() => {
+  removeGroup().then(() => {
       // Update new group
       const addPromises = customerGroupId.map(async (value) => {
         await db.query(queries.addCustomerGroupToReward, [

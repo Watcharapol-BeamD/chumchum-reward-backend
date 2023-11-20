@@ -47,7 +47,7 @@ const removeCustomerGroupFromReward = `DELETE FROM Reward_Customer_Groups WHERE 
 const getRewardView = "SELECT * FROM Rewards_View;";
 const getRewardAvailableInCurrentTimeView =
   "SELECT * from Rewards_event_Time_length_view";
-const getRewardsByEventTimeAndCustomerGroupView = `select * from Rewards_event_Time_length_BY_Customer_Group_View WHERE group_id = ? ;`;
+const getRewardsByEventTimeAndCustomerGroupView = `select * from Rewards_event_Time_length_BY_Customer_Group_View WHERE group_id = ? AND status = 'Active' ;`;
 
 //----------------------------useless----------------------------
 const addNewRefreshToken = `UPDATE Customers SET refresh_token = ? WHERE customer_id = ?;`;
