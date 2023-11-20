@@ -10,7 +10,7 @@ const auth = require('../middleware/auth')
 
 //post request
 router.post("/login", adminController.getLogin);
-router.post("/reset_password", adminController.getResetAdminPassword);
+router.post("/reset_password",auth.verifyAccessToken, adminController.getResetAdminPassword);
 router.post("/refresh_token" ,auth.verifyRefreshToken,adminController.getRefreshToken)
 // router.post("/redeem_reward", rewardController.getRedeemReward);
 

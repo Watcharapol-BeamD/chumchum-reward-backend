@@ -163,7 +163,7 @@ const getRefreshToken = async (req, res) => {
       res.status(200).send({
         access_token: access_token,
         refresh_token: refresh_token,
-        msg: "token refresh complete Complete",
+        msg: "token refresh complete",
       });
     } else {
       res.status(401).send({ msg: "Invalid credentials" });
