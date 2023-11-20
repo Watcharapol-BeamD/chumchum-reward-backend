@@ -1,6 +1,7 @@
 require("dotenv").config();
 const { db } = require("../../db");
 const adminQueries = require("../queries/adminQueries");
+const queries = require("../queries/queries.js");
 
 const {
   jwtAccessTokenGenerate,
@@ -65,7 +66,12 @@ const getLogin = async (req, res) => {
         if (password === user.password) {
           const access_token = jwtAccessTokenGenerate(userData);
           const refresh_token = jwtRefreshTokenGenerate(userData);
-          console.log("passs");
+
+          await db.query(adminQueries.addRefreshToken, [
+            refresh_token,
+            user.admin_id,
+          ]);
+
           return res.status(200).json({
             msg: "Login complete",
             is_login_pass: true,
@@ -88,6 +94,11 @@ const getLogin = async (req, res) => {
           //***jwt use for admin only*/ if add more information in token modify in function too.
           const access_token = jwtAccessTokenGenerate(userData);
           const refresh_token = jwtRefreshTokenGenerate(userData);
+          await db.query(adminQueries.addRefreshToken, [
+            refresh_token,
+            user.admin_id,
+          ]);
+
           return res.status(200).json({
             msg: "Login complete",
             is_login_pass: true,
@@ -118,10 +129,42 @@ const getLogin = async (req, res) => {
   }
 };
 
- 
+const getRefreshToken = async (req, res) => {
+  //receive data from middleware
+  const admin_id = req.admin_id;
+  const old_refresh_token = req.token;
+
+  try {
+    const results = await db.query(adminQueries.getRefreshToken, [admin_id]);
+    if (results[0].length === 1) {
+      // Check is old refresh token if yes will reject.
+      if (old_refresh_token !== results[0][0].refresh_token) {
+        return res.sendStatus(401);
+      }
+      const user = { admin_id };
+      const access_token = jwtAccessTokenGenerate(user);
+      const refresh_token = jwtRefreshTokenGenerate(user);
+
+      await db.query(adminQueries.addRefreshToken, [refresh_token, admin_id]);
+
+      res.status(200).send({
+        access_token: access_token,
+        refresh_token: refresh_token,
+        msg: "token refresh complete Complete",
+      });
+    } else {
+      res.status(401).send({ msg: "Invalid credentials" });
+    }
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .send({ msg: "An error occurred while processing your request." });
+  }
+};
 
 module.exports = {
   getLogin,
- 
+  getRefreshToken,
   getResetAdminPassword,
 };

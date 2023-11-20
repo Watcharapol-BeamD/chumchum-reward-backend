@@ -36,11 +36,11 @@ const verifyRefreshToken = (req, res, next) => {
         return res.status(403).send({ msg: "Invalid token", isAuth: false });
       }
       // console.log(decoded);
-      req.customer_id = decoded.customer_id;
+      req.admin_id = decoded.admin_id;
       // req.username = decoded.username;
       req.token = token;
-
-      // console.log(req)
+ 
+     
       next();
     });
   } catch (err) {

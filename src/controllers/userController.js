@@ -60,10 +60,9 @@ const getRegisterNewCustomer = async (req, res) => {
     // const encryptPassword = await bcrypt.hash(password, saltRounds);
 
     // Generate a JWT token
-
-    const user = { customer_id };
-    const access_token = jwtAccessTokenGenerate(user);
-    const refresh_token = jwtRefreshTokenGenerate(user);
+    // const user = { customer_id };
+    // const access_token = jwtAccessTokenGenerate(user);
+    // const refresh_token = jwtRefreshTokenGenerate(user);
 
     // Insert the new user into the database
     const defaultCustomerGroup = 1
@@ -73,15 +72,15 @@ const getRegisterNewCustomer = async (req, res) => {
       retailer_name,
       bplus_code,
       phone_number,
-      refresh_token,
+      // refresh_token,
       defaultCustomerGroup
     ]);
  
     res.status(201).json({
       msg: "Registration successful",
       isRegisterPass: true,
-      access_token: access_token,
-      refresh_token: refresh_token,
+      // access_token: access_token,
+      // refresh_token: refresh_token,
     });
   } catch (err) {
     console.error(err);

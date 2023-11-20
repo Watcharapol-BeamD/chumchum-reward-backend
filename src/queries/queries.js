@@ -50,9 +50,9 @@ const getRewardAvailableInCurrentTimeView =
 const getRewardsByEventTimeAndCustomerGroupView = `select * from Rewards_event_Time_length_BY_Customer_Group_View WHERE group_id = ? AND status = 'Active' ;`;
 
 //----------------------------useless----------------------------
-const addNewRefreshToken = `UPDATE Customers SET refresh_token = ? WHERE customer_id = ?;`;
-const getRefreshToken = `SELECT refresh_token FROM Customers WHERE customer_id = ?`;
-const getUpdateRefreshToken = `UPDATE Customers SET refresh_token = ? WHERE customer_id = ?;`;
+// const addNewRefreshToken = `UPDATE Customers SET refresh_token = ? WHERE customer_id = ?;`;
+// const getRefreshToken = `SELECT refresh_token FROM Customers WHERE customer_id = ?`;
+// const getUpdateRefreshToken = `UPDATE Customers SET refresh_token = ? WHERE customer_id = ?;`;
 // --------------------------------------------------------
 
 module.exports = {
@@ -68,10 +68,7 @@ module.exports = {
   updateCustomerInfo,
   increasePoint,
   decreasePoint,
-  addNewRefreshToken,
   getRewardImage,
-  getUpdateRefreshToken,
-  getRefreshToken,
   addNewReward,
   decreaseReward,
   updateRewardDetails,
