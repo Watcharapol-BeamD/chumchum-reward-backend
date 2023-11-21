@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const adminController = require("../controllers/adminController");
-
+const auth = require('../middleware/auth')
 //get request
  
 // router.get('/send_email',rewardController.getSendEmail)
@@ -10,7 +10,8 @@ const adminController = require("../controllers/adminController");
 
 //post request
 router.post("/login", adminController.getLogin);
-router.post("/reset_password", adminController.getResetAdminPassword);
+router.post("/reset_password",auth.verifyAccessToken, adminController.getResetAdminPassword);
+router.post("/refresh_token" ,auth.verifyRefreshToken,adminController.getRefreshToken)
 // router.post("/redeem_reward", rewardController.getRedeemReward);
 
 module.exports = router;

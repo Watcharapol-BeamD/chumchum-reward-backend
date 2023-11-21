@@ -3,7 +3,7 @@ const getAllUser =
 const getCustomerById = `SELECT * FROM Customers c JOIN Customer_Groups cg ON c.fk_group_id = cg.group_id WHERE customer_id = ?;`;
 const getCustomerInfoList = `SELECT * FROM customer_info;`;
 const registerNewCustomer =
-  "INSERT INTO Customers (customer_id, retailer_name, bplus_code, phone_number,refresh_token,fk_group_id)VALUES (?, ?, ?, ?,?,?)";
+  "INSERT INTO Customers (customer_id, retailer_name, bplus_code, phone_number,fk_group_id)VALUES (?, ?, ?, ?,?)";
 
 const getCheckUserExist =
   "SELECT COUNT(*) AS count FROM Customers WHERE Customer_id =?";
@@ -50,9 +50,9 @@ const getRewardAvailableInCurrentTimeView =
 const getRewardsByEventTimeAndCustomerGroupView = `select * from Rewards_event_Time_length_BY_Customer_Group_View WHERE group_id = ? AND status = 'Active' ;`;
 
 //----------------------------useless----------------------------
-const addNewRefreshToken = `UPDATE Customers SET refresh_token = ? WHERE customer_id = ?;`;
-const getRefreshToken = `SELECT refresh_token FROM Customers WHERE customer_id = ?`;
-const getUpdateRefreshToken = `UPDATE Customers SET refresh_token = ? WHERE customer_id = ?;`;
+// const addNewRefreshToken = `UPDATE Customers SET refresh_token = ? WHERE customer_id = ?;`;
+// const getRefreshToken = `SELECT refresh_token FROM Customers WHERE customer_id = ?`;
+// const getUpdateRefreshToken = `UPDATE Customers SET refresh_token = ? WHERE customer_id = ?;`;
 // --------------------------------------------------------
 
 module.exports = {
@@ -68,10 +68,7 @@ module.exports = {
   updateCustomerInfo,
   increasePoint,
   decreasePoint,
-  addNewRefreshToken,
   getRewardImage,
-  getUpdateRefreshToken,
-  getRefreshToken,
   addNewReward,
   decreaseReward,
   updateRewardDetails,
