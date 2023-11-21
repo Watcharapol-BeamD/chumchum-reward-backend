@@ -43,7 +43,7 @@ const getCustomerInfo = async (req, res) => {
 const getRegisterNewCustomer = async (req, res) => {
   const { customer_id, retailer_name, bplus_code, phone_number } = req.body;
   console.log(req.body);
-
+ 
   try {
     // Check if the user already exists in the database
     const userExistsResult = await db.query(queries.getCheckUserExist, [
@@ -56,14 +56,7 @@ const getRegisterNewCustomer = async (req, res) => {
         .status(400)
         .json({ msg: "This user already register", isRegisterPass: false });
     }
-
-    // const encryptPassword = await bcrypt.hash(password, saltRounds);
-
-    // Generate a JWT token
-    // const user = { customer_id };
-    // const access_token = jwtAccessTokenGenerate(user);
-    // const refresh_token = jwtRefreshTokenGenerate(user);
-
+ 
     // Insert the new user into the database
     const defaultCustomerGroup = 1
 
@@ -72,15 +65,14 @@ const getRegisterNewCustomer = async (req, res) => {
       retailer_name,
       bplus_code,
       phone_number,
-      // refresh_token,
+ 
       defaultCustomerGroup
     ]);
  
     res.status(201).json({
       msg: "Registration successful",
       isRegisterPass: true,
-      // access_token: access_token,
-      // refresh_token: refresh_token,
+ 
     });
   } catch (err) {
     console.error(err);
