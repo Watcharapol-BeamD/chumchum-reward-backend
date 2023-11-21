@@ -18,12 +18,14 @@ const increasePoint = `UPDATE Customers SET points = points + ? WHERE customer_i
 const decreasePoint = `UPDATE Customers SET points = points - ? WHERE customer_id = ?;`;
 const getRewardImage = `SELECT reward_image FROM Rewards WHERE reward_id = ?;`;
 const getCustomerGroup = `SELECT * FROM Customer_Groups`;
+const getCheckRetailerCode = `SELECT EXISTS (SELECT 1 FROM Retailer_Codes WHERE bplus_code = ?) AS result;`;
+
 //----------------------reward----------------------------
 const getReward = `SELECT r.reward_id,r.name,r.description,r.quantity,r.require_point,r.status,r.event_start_date,r.event_end_date,r.reward_image,GROUP_CONCAT(cg.group_name SEPARATOR ', ') AS customer_group_name,
 GROUP_CONCAT(cg.group_id SEPARATOR ', ') AS customer_group_id
 FROM Rewards r JOIN Reward_Customer_Groups rcg ON r.reward_id = rcg.reward_id JOIN Customer_Groups cg ON rcg.group_id = cg.group_id GROUP BY r.reward_id;
 `;
- 
+
 const getRewardAvailableInCurrentTime = `SELECTr.reward_id,r.name,r.description,r.quantity,r.require_point,r.status,r.event_start_date,r.event_end_date,r.reward_image,
 GROUP_CONCAT(cg.group_name SEPARATOR ', ') AS customer_groups FROM Rewards r JOIN Reward_Customer_Groups rcg ON r.reward_id = rcg.reward_id JOIN Customer_Groups cg ON rcg.group_id = cg.group_id 
 WHERE (NOW() >= r.event_start_date AND NOW() <= r.event_end_date) GROUP BYr.reward_id;`;
@@ -83,4 +85,5 @@ module.exports = {
   removeCustomerGroupFromReward,
   getCustomerInfoList,
   getRewardsByEventTimeAndCustomerGroupView,
+  getCheckRetailerCode,
 };

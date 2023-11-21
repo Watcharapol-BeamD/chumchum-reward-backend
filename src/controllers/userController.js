@@ -57,6 +57,13 @@ const getRegisterNewCustomer = async (req, res) => {
         .json({ msg: "This user already register", isRegisterPass: false });
     }
  
+    //check has retailer code
+    const hasRetailerCode =await db.query(queries.getCheckRetailerCode,[bplus_code])
+ 
+    if(!hasRetailerCode[0][0].result){
+      return res.status(404).json({msg:'ไม่พบรหัสร้านค้าของคุณ',isRegisterPass: false})
+    }
+
     // Insert the new user into the database
     const defaultCustomerGroup = 1
 
@@ -65,7 +72,6 @@ const getRegisterNewCustomer = async (req, res) => {
       retailer_name,
       bplus_code,
       phone_number,
- 
       defaultCustomerGroup
     ]);
  
