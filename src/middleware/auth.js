@@ -24,7 +24,6 @@ const verifyAccessToken = (req, res, next) => {
 };
 
 const verifyRefreshToken = (req, res, next) => {
-  console.log("55555555555")
   try {
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
