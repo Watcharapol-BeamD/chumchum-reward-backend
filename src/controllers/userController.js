@@ -101,7 +101,7 @@ const getRegisterNewCustomer = async (req, res) => {
 const getIsRegister = async (req, res) => {
   const { customer_id } = req.body;
   try {
-    // Check if the user already exists in the database
+    // Check if the user already exists in the database.
     const userExistsResult = await db.query(queries.getCheckUserExist, [
       customer_id,
     ]);
