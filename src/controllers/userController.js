@@ -42,8 +42,8 @@ const getCustomerInfo = async (req, res) => {
 
 const getRegisterNewCustomer = async (req, res) => {
   const { customer_id, retailer_name, bplus_code, phone_number } = req.body;
-  console.log(req.body);
- 
+  // console.log(req.body);
+
   try {
     // Check if the user already exists in the database
     const userExistsResult = await db.query(queries.getCheckUserExist, [
@@ -56,29 +56,39 @@ const getRegisterNewCustomer = async (req, res) => {
         .status(400)
         .json({ msg: "This user already register", isRegisterPass: false });
     }
- 
+
     //check has retailer code
-    const hasRetailerCode =await db.query(queries.getCheckRetailerCode,[bplus_code])
- 
-    if(!hasRetailerCode[0][0].result){
-      return res.status(404).json({msg:'ไม่พบรหัสร้านค้าของคุณ',isRegisterPass: false})
+    const hasRetailerCodeResult = await db.query(queries.getCheckRetailerCode, [
+      bplus_code,
+    ]);
+
+    if (!hasRetailerCodeResult[0].length) {
+      return res
+        .status(404)
+        .json({ msg: "ไม่พบรหัสร้านค้าของคุณ", isRegisterPass: false });
+    } else if (hasRetailerCodeResult[0][0].activation === 1) {
+      return res
+        .status(403)
+        .json({ msg: "รหัสร้านค้านี้ถูกลงทะเบียนแล้ว", isRegisterPass: false });
     }
 
+    if (hasRetailerCodeResult[0][0].activation === 0) {
+      await db.query(queries.getActivateCustomer, [bplus_code]);
+    }
     // Insert the new user into the database
-    const defaultCustomerGroup = 1
+    const defaultCustomerGroup = 1;
 
     await db.query(queries.registerNewCustomer, [
       customer_id,
       retailer_name,
       bplus_code,
       phone_number,
-      defaultCustomerGroup
+      defaultCustomerGroup,
     ]);
- 
+
     res.status(201).json({
       msg: "Registration successful",
       isRegisterPass: true,
- 
     });
   } catch (err) {
     console.error(err);
