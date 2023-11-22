@@ -18,8 +18,8 @@ const increasePoint = `UPDATE Customers SET points = points + ? WHERE customer_i
 const decreasePoint = `UPDATE Customers SET points = points - ? WHERE customer_id = ?;`;
 const getRewardImage = `SELECT reward_image FROM Rewards WHERE reward_id = ?;`;
 const getCustomerGroup = `SELECT * FROM Customer_Groups`;
-const getCheckRetailerCode = `SELECT EXISTS (SELECT 1 FROM Retailer_Codes WHERE bplus_code = ?) AS result;`;
-
+const getCheckRetailerCode = `SELECT * FROM Retailer_Codes WHERE bplus_code = ?`;
+const getActivateCustomer = `UPDATE Retailer_Codes SET activation = 1 WHERE bplus_code = ?`;
 //----------------------reward----------------------------
 const getReward = `SELECT r.reward_id,r.name,r.description,r.quantity,r.require_point,r.status,r.event_start_date,r.event_end_date,r.reward_image,GROUP_CONCAT(cg.group_name SEPARATOR ', ') AS customer_group_name,
 GROUP_CONCAT(cg.group_id SEPARATOR ', ') AS customer_group_id
@@ -86,4 +86,5 @@ module.exports = {
   getCustomerInfoList,
   getRewardsByEventTimeAndCustomerGroupView,
   getCheckRetailerCode,
+  getActivateCustomer,
 };
