@@ -29,7 +29,10 @@ const lineConfig = {
   channelSecret: process.env.LINE_CHANNEL_SECRET,
 };
 
-
+//For dev
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
+//For Prod
+// app.listen();
