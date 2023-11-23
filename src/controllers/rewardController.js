@@ -276,7 +276,7 @@ const editRewardDetails = async (req, res) => {
     }
 
     const removePromises = groupToRemove.map(async (value) => {
-      console.log(typeof value);
+ 
       await db.query(queries.removeCustomerGroupFromReward, [
         rewardId,
         parseInt(value, 10),
@@ -312,9 +312,6 @@ const editRewardDetails = async (req, res) => {
     const fileName = generateName + "_" + req.file.originalname;
 
     //--delete old image--
-    console.log("----------------------------");
-    console.log(imageName);
-    console.log("----------------------------");
     ftpService.deleteFileFromHost(oldImageName);
     //--------------------
 
