@@ -133,7 +133,7 @@ const sendEmail = async (
                         <td class="es-m-p20b" align="left" style="padding:0;Margin:0;width:262px">
                          <table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                            <tr>
-                            <td align="center" style="padding:0;Margin:0"><img class="adapt-img" src="https://api-test.chumchumreward.com/images/${reward_image}"alt style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" width="262"></td>
+                            <td align="center" style="padding:0;Margin:0"><img class="adapt-img" src="${process.env.IMAGE_URL}images/${reward_image}"alt style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" width="262"></td>
                            </tr>
                          </table></td>
                        </tr>

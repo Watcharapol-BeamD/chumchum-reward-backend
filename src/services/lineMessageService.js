@@ -19,7 +19,7 @@ const sendLineMessage = async (customer_id,reward_image,reward_name) => {
               contents: [
                 {
                   type: "image",
-                  url: `https://api-test.chumchumreward.com/images/${reward_image}`,
+                  url: `${process.env.IMAGE_URL}images/${reward_image}`,
                   size: "3xl",
                   aspectMode: "fit",
                   aspectRatio: "150:196",
