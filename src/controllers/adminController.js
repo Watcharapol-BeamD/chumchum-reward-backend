@@ -10,36 +10,64 @@ const {
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
-// ใช้ได้เหมือนกัน
 const addNewSaleHistory = async (req, res) => {
   const saleHistoryList = req.body;
-  const addSaleHistory = `INSERT INTO Points_Transactions (doc_date, doc_ref, bill_amount,point_amount,fk_customer_id)VALUES (?,?,?,?,?);`;
-  const getCustomerCode =
-    "SELECT customer_id FROM Customers WHERE bplus_code = ?";
-  const updatePoint =
-    "UPDATE Customers SET points = points + ? WHERE customer_id = ?;";
 
-  saleHistoryList.map(async (item) => {
-    await db.query(getCustomerCode, [item.VxceedCode]).then((res) => {
-      const customerIdList = res[0];
+  const addSaleHistory = `INSERT INTO Points_Transactions (doc_date, doc_ref, bill_amount, point_amount, fk_customer_id) VALUES (?, ?, ?, ?, ?);`;
+  const getCustomerCode = "SELECT customer_id FROM Customers WHERE bplus_code = ?";
+  const updatePoint = "UPDATE Customers SET points = points + ? WHERE customer_id = ?;";
 
-      customerIdList.map(async (item2) => {
+  try {
+    for (const item of saleHistoryList) {
+      const [customerResults] = await db.query(getCustomerCode, [item.VxceedCode]);
+
+      if (customerResults.length > 0) {
+        const customerId = customerResults[0].customer_id;
         const pointAmount = Math.floor(item.BillAmount / 500);
-        const customerId = item2.customer_id;
 
-        await db.query(addSaleHistory, [
-          item.DocDate,
-          item.DocRef,
-          item.BillAmount,
-          pointAmount,
-          customerId,
-        ]);
-
+        await db.query(addSaleHistory, [item.DocDate, item.DocRef, item.BillAmount, pointAmount, customerId]);
         await db.query(updatePoint, [pointAmount, customerId]);
-      });
-    });
-  });
+      }
+    }
+
+    res.status(200).send('Sale history added successfully.');
+  } catch (error) {
+    console.error('Error adding sale history:', error);
+    res.status(500).send('Internal Server Error');
+  }
 };
+
+
+// ใช้ได้เหมือนกัน
+// const addNewSaleHistory = async (req, res) => {
+//   const saleHistoryList = req.body;
+//   const addSaleHistory = `INSERT INTO Points_Transactions (doc_date, doc_ref, bill_amount,point_amount,fk_customer_id)VALUES (?,?,?,?,?);`;
+//   const getCustomerCode =
+//     "SELECT customer_id FROM Customers WHERE bplus_code = ?";
+//   const updatePoint =
+//     "UPDATE Customers SET points = points + ? WHERE customer_id = ?;";
+
+//   saleHistoryList.map(async (item) => {
+//     await db.query(getCustomerCode, [item.VxceedCode]).then((res) => {
+//       const customerIdList = res[0];
+
+//       customerIdList.map(async (item2) => {
+//         const pointAmount = Math.floor(item.BillAmount / 500);
+//         const customerId = item2.customer_id;
+
+//         await db.query(addSaleHistory, [
+//           item.DocDate,
+//           item.DocRef,
+//           item.BillAmount,
+//           pointAmount,
+//           customerId,
+//         ]);
+
+//         await db.query(updatePoint, [pointAmount, customerId]);
+//       });
+//     });
+//   });
+// };
 
 const getResetAdminPassword = async (req, res) => {
   const { newPassword, current_password, admin_id } = req.body;
