@@ -12,106 +12,64 @@ const saltRounds = 10;
 
 const addNewSaleHistory = async (req, res) => {
   const saleHistoryList = req.body;
-  const getCustomerCode = "select customer_id from Customers where bplus_code = ?";
-  const getCustomerCodeInsert = "SELECT ";
+ 
+  try {
+    // Use Promise.all to run all database queries in parallel for better performance
+    const customerPromises = saleHistoryList.map(async (item) => {
+      const [customerResult] = await db.query(adminQueries.getCustomerCode, [
+        item.VxceedCode,
+      ]);
 
-  saleHistoryList.map(async (item) => {
-    await db.query(adminQueries.getCustomerCode, [item.VxceedCode]).then((res) => {
-      const customerId = res[0];
-      customerId.map(async (item2) => {
+      if (customerResult.length > 0) {
+        const customerId = customerResult[0].customer_id;
         const pointAmount = Math.floor(item.BillAmount / 500);
-        await db.query(adminQueries.addSaleHistory, [
+        return db.query(adminQueries.addSaleHistory, [
           item.DocDate,
           item.DocRef,
           item.BillAmount,
           pointAmount,
-          item2.customer_id,
+          customerId,
         ]);
-      });
+      }
     });
-  });
 
-  // const customerList = results[0];
+    // Wait for all queries to complete
+    await Promise.all(customerPromises);
 
-  // const newArr = customerList.map((customer) => {
-  //   const matchingSale = saleHistoryList.find(
-  //     (sale) => customer.bplus_code === sale.bplus_code
-  //   );
-
-  //   if (matchingSale) {
-  //     // If there's a match, merge the customer and sale objects
-  //     return {
-  //       ...customer,
-  //       ...matchingSale,
-  //     };
-  //   }
-
-  //   // If no match is found, return the original customer object
-  //   return customer;
-  // });
-
-  //  const newArr = customerList.map((item) => {
-  //     return saleHistoryList.map((item2) => {
-  //       item.bplus_code === item2.bplus_code;
-  //     });
-  //   });
-
-  // const newArr = customerList.map((customer) => {
-  //   return {
-  //     ...customer,
-  //     hasSale: saleHistoryList.some((sale) => customer.bplus_code === sale.bplus_code)
-  //   };
-  // });
-
-  //  console.log(newArr)
-
-  // const matchCustomer = customerList.filter((item)=>{
-  //   item.bplus_code === saleHistoryList.
-  // })
-
-  // console.log(customerList)
-
-  // console.log(saleHistoryList);
-  // if (!Array.isArray(saleHistoryList)) {
-  //   console.error("Invalid input: req.body is not an array");
-  //   return res.status(400).json({ error: "Invalid input" });
-  // }
-
-  // console.log("Received saleHistoryList:", saleHistoryList);
-
-  // try {
-  //   await Promise.all(
-  //     saleHistoryList.map(async (item, index) => {
-  //       const { DocDate, DocRef, BillAmount, VxceedCode } = item;
-
-  //       if (!DocDate || !DocRef || !BillAmount || !VxceedCode) {
-  //         console.error(`Invalid item at index ${index}:`, item);
-  //         throw new Error(`Invalid item at index ${index}`);
-  //       }
-
-  //       console.log(`Inserting item ${index}:`, {
-  //         DocDate,
-  //         DocRef,
-  //         BillAmount,
-  //         VxceedCode,
-  //       });
-
-  //       await db.query(adminQueries.addSaleHistory, [
-  //         DocDate,
-  //         DocRef,
-  //         BillAmount,
-  //         VxceedCode,
-  //       ]);
-  //     })
-  //   );
-
-  //   console.log("All items inserted successfully");
-  //   res.status(200).json({ message: "Sale history added successfully" });
-  // } catch (err) {
-  //   console.error("Error inserting sale history:", err);
-  //   res.status(500).json({ error: "Failed to add sale history" });
-  // }
+    // Send success response
+    res.status(200).send({ message: "Sale history added successfully" });
+  } catch (error) {
+    console.error("Error adding sale history:", error);
+    res
+      .status(500)
+      .send({ error: "An error occurred while adding sale history" });
+  }
 };
+
+// ใช้ได้เหมือนกัน
+// const addNewSaleHistory = async (req, res) => {
+//   const saleHistoryList = req.body;
+//   const addSaleHistory = `INSERT INTO Points_Transactions (doc_date, doc_ref, bill_amount,point_amount,fk_customer_id)VALUES (?,?,?,?,?);`;
+//   const getCustomerCode =
+//     "SELECT customer_id FROM Customers WHERE bplus_code = ?";
+
+//   saleHistoryList.map(async (item) => {
+//     await db.query(getCustomerCode, [item.VxceedCode]).then((res) => {
+//       const customerId = res[0];
+//       customerId.map(async (item2) => {
+//         const pointAmount = Math.floor(item.BillAmount / 500);
+//         await db.query(addSaleHistory, [
+//           item.DocDate,
+//           item.DocRef,
+//           item.BillAmount,
+//           pointAmount,
+//           item2.customer_id,
+//         ]);
+//       });
+//     });
+//   });
+
+// };
 
 const getResetAdminPassword = async (req, res) => {
   const { newPassword, current_password, admin_id } = req.body;
