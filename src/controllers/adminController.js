@@ -13,20 +13,20 @@ const saltRounds = 10;
 const addNewSaleHistory = async (req, res) => {
   const saleHistoryList = req.body;
 
-  const addSaleHistory = `INSERT INTO Points_Transactions (doc_date, doc_ref, bill_amount, point_amount, fk_customer_id) VALUES (?, ?, ?, ?, ?);`;
-  const getCustomerCode = "SELECT customer_id FROM Customers WHERE bplus_code = ?";
-  const updatePoint = "UPDATE Customers SET points = points + ? WHERE customer_id = ?;";
+  // const addSaleHistory = `INSERT INTO Points_Transactions (doc_date, doc_ref, bill_amount, point_amount, fk_customer_id) VALUES (?, ?, ?, ?, ?);`;
+  // const getCustomerCode = "SELECT customer_id FROM Customers WHERE bplus_code = ?";
+  // const increasePoint = "UPDATE Customers SET points = points + ? WHERE customer_id = ?;";
 
   try {
     for (const item of saleHistoryList) {
-      const [customerResults] = await db.query(getCustomerCode, [item.VxceedCode]);
+      const [customerResults] = await db.query(adminQueries.getCustomerCode, [item.VxceedCode]);
 
       if (customerResults.length > 0) {
         const customerId = customerResults[0].customer_id;
         const pointAmount = Math.floor(item.BillAmount / 500);
 
-        await db.query(addSaleHistory, [item.DocDate, item.DocRef, item.BillAmount, pointAmount, customerId]);
-        await db.query(updatePoint, [pointAmount, customerId]);
+        await db.query(adminQueries.addSaleHistory, [item.DocDate, item.DocRef, item.BillAmount, pointAmount, customerId]);
+        await db.query(queries.increasePoint, [pointAmount, customerId]);
       }
     }
 
