@@ -132,7 +132,7 @@ const getRedeemReward = async (req, res) => {
         [customer_id]
       );
       const redeem_timestamp = redeem_timestamp_result[0][0].redeem_timestamp;
-
+ 
       //---------------------get reward image------------------------
       const reward_image_result = await db.query(queries.getRewardImage, [
         reward_id,
