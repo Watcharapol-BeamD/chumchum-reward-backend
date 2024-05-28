@@ -151,7 +151,9 @@ const getRedeemReward = async (req, res) => {
 
       //------------------------push line message----------------
       //customer_id ต้องเป็นของ line
-      await sendLineMessage(customer_id,reward_image,reward_name)
+      await sendLineMessage(customer_id, reward_image, reward_name).then(() => {
+        console.log("Line message send successfully");
+      });
 
       res.status(201).json({ msg: "redeem successful", isRedeemSuccess: true });
     } else {
@@ -265,9 +267,7 @@ const editRewardDetails = async (req, res) => {
     oldImageName,
     groupToRemove,
   } = req.body;
- 
 
-  
   //-------------New-------------------
   // Remove Group
   const removeGroup = () => {
@@ -276,7 +276,6 @@ const editRewardDetails = async (req, res) => {
     }
 
     const removePromises = groupToRemove.map(async (value) => {
- 
       await db.query(queries.removeCustomerGroupFromReward, [
         rewardId,
         parseInt(value, 10),
@@ -286,7 +285,8 @@ const editRewardDetails = async (req, res) => {
     return Promise.all(removePromises);
   };
 
-  removeGroup().then(() => {
+  removeGroup()
+    .then(() => {
       // Update new group
       const addPromises = customerGroupId.map(async (value) => {
         await db.query(queries.addCustomerGroupToReward, [

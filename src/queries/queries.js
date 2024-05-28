@@ -9,7 +9,7 @@ const getCheckUserExist =
   "SELECT COUNT(*) AS count FROM Customers WHERE Customer_id =?";
 
 const keepRewardToHistory = `INSERT INTO Redeem_Histories (fk_customer_id,fk_reward_id,quantity, points_used)VALUES(?, ?, ?, ?)`;
-const getRedeemRewardTimestamp = `SELECT redeem_timestamp FROM Redeem_Histories WHERE fk_customer_id ='U1a12937aef17947c281f9d3e7cf857b7' ORDER BY redeem_history_id DESC LIMIT 1;`;
+const getRedeemRewardTimestamp = `SELECT redeem_timestamp FROM Redeem_Histories WHERE fk_customer_id =? ORDER BY redeem_history_id DESC LIMIT 1;`;
 const getRewardRemainQuantity =
   "SELECT reward_id,quantity FROM Rewards WHERE reward_id = ?;";
 
