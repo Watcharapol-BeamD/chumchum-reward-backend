@@ -40,7 +40,6 @@ const addNewSaleHistory = async (req, res) => {
 
     res.status(200).send("Sale history added successfully.");
   } catch (error) {
-    console.log(error.code);
     // console.error("Error adding sale history:", error);
     if (error.code === "ER_TRUNCATED_WRONG_VALUE") {
       return res
