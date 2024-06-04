@@ -19,24 +19,38 @@ const addNewSaleHistory = async (req, res) => {
 
   try {
     for (const item of saleHistoryList) {
-      const [customerResults] = await db.query(adminQueries.getCustomerCode, [item.VxceedCode]);
+      const [customerResults] = await db.query(adminQueries.getCustomerCode, [
+        item.VxceedCode,
+      ]);
 
       if (customerResults.length > 0) {
         const customerId = customerResults[0].customer_id;
         const pointAmount = Math.floor(item.BillAmount / 500);
 
-        await db.query(adminQueries.addSaleHistory, [item.DocDate, item.DocRef, item.BillAmount, pointAmount, customerId]);
+        await db.query(adminQueries.addSaleHistory, [
+          item.DocDate,
+          item.DocRef,
+          item.BillAmount,
+          pointAmount,
+          customerId,
+        ]);
         await db.query(queries.increasePoint, [pointAmount, customerId]);
       }
     }
 
-    res.status(200).send('Sale history added successfully.');
+    res.status(200).send("Sale history added successfully.");
   } catch (error) {
-    console.error('Error adding sale history:', error);
-    res.status(500).send('Internal Server Error');
+    // console.error("Error adding sale history:", error);
+    if (error.code === "ER_TRUNCATED_WRONG_VALUE") {
+      return res
+        .status(500)
+        .send({ isUploadCSVError: true, csvMsg: "Wrong format" });
+    }
+    res
+      .status(500)
+      .send({ isUploadCSVError: true, csvMsg: "Internal Server Error" });
   }
 };
-
 
 // ใช้ได้เหมือนกัน
 // const addNewSaleHistory = async (req, res) => {
