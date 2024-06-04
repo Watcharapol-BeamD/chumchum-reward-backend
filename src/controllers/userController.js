@@ -196,6 +196,23 @@ const getCustomerGroup = async (req, res) => {
   }
 };
 
+const getCustomerByPhoneNumber = async (req, res) => {
+ 
+  const { phone_number } = req.body;
+ 
+ 
+  try {
+    const result = await db.query(queries.getCustomerByPhoneNumber, [
+      phone_number,
+    ]);
+    res.status(200).send(result[0]);
+  } catch {
+    res
+      .status(404)
+      .send({ msg: "An error occurred while processing your request." });
+  }
+};
+
 module.exports = {
   getAllUser,
   getRegisterNewCustomer,
@@ -205,4 +222,5 @@ module.exports = {
   getRefreshToken,
   getCustomerGroup,
   getCustomerInfo,
+  getCustomerByPhoneNumber,
 };
