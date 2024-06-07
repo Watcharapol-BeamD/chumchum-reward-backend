@@ -14,7 +14,8 @@ router.post("/is_register", userController.getIsRegister);
 router.post('/get_customer_by_id',userController.getCustomerById) 
 router.post('/edit_customer_info',userController.updateCustomerInformation)
 router.post("/refresh_token" ,auth.verifyRefreshToken,userController.getRefreshToken)
+router.post("/customer_info",userController.getCustomerByPhoneNumber)
 // router.post("/redeem_reward", userController.getRedeemReward);
 
-
+ 
 module.exports = router;
