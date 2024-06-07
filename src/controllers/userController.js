@@ -203,8 +203,7 @@ const getCustomerByPhoneNumber = async (req, res) => {
     const result = await db.query(queries.getCustomerByPhoneNumber, [
       phone_number,
     ]);
-    console.log(result[0]);
-
+ 
     if (result[0].length === 0) {
       return res
         .status(200)
