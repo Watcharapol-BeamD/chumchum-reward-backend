@@ -197,15 +197,20 @@ const getCustomerGroup = async (req, res) => {
 };
 
 const getCustomerByPhoneNumber = async (req, res) => {
- 
   const { phone_number } = req.body;
- 
- 
+
   try {
     const result = await db.query(queries.getCustomerByPhoneNumber, [
       phone_number,
     ]);
-    res.status(200).send(result[0]);
+    console.log(result[0]);
+
+    if (result[0].length === 0) {
+      return res
+        .status(200)
+        .send({ customer: result[0][0], msg: "user not found" });
+    }
+    res.status(200).send({ customer: result[0][0], msg: "user found" });
   } catch {
     res
       .status(404)
