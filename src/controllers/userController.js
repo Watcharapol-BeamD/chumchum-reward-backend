@@ -77,12 +77,14 @@ const getRegisterNewCustomer = async (req, res) => {
     }
     // Insert the new user into the database
     const defaultCustomerGroup = 1;
+    const defaultPoints = 0;
 
     await db.query(queries.registerNewCustomer, [
       customer_id,
       retailer_name,
       bplus_code,
       phone_number,
+      defaultPoints,
       defaultCustomerGroup,
     ]);
 
@@ -203,7 +205,7 @@ const getCustomerByPhoneNumber = async (req, res) => {
     const result = await db.query(queries.getCustomerByPhoneNumber, [
       phone_number,
     ]);
- 
+
     if (result[0].length === 0) {
       return res
         .status(200)
