@@ -4,7 +4,7 @@ const getCustomerById = `SELECT * FROM Customers c JOIN Customer_Groups cg ON c.
 const getCustomerByPhoneNumber = `SELECT * FROM Customers WHERE phone_number = ?;`;
 const getCustomerInfoList = `SELECT * FROM customer_info;`;
 const registerNewCustomer =
-  "INSERT INTO Customers (customer_id, retailer_name, bplus_code, phone_number,fk_group_id)VALUES (?, ?, ?, ?,?)";
+  "INSERT INTO Customers (customer_id, retailer_name, bplus_code, phone_number,points,fk_group_id)VALUES (?, ?, ?, ?,?,?)";
 
 const getCheckUserExist =
   "SELECT COUNT(*) AS count FROM Customers WHERE Customer_id =?";
