@@ -25,7 +25,7 @@ const addNewSaleHistory = async (req, res) => {
 
       if (customerResults.length > 0) {
         const customerId = customerResults[0].customer_id;
-        const pointAmount = Math.floor(item.BillAmount / 500);
+        const pointAmount = Math.floor(item.BillAmount / 100);
 
         await db.query(adminQueries.addSaleHistory, [
           item.DocDate,
