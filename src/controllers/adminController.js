@@ -25,7 +25,9 @@ const addNewSaleHistory = async (req, res) => {
 
       if (customerResults.length > 0) {
         const customerId = customerResults[0].customer_id;
-        const pointAmount = Math.floor(item.BillAmount / 100);
+ 
+        //when item.BillAmount less than 0 ,it mean customer return product but use same query to decrease point.
+        const pointAmount = item.BillAmount > 0 ? Math.floor(item.BillAmount / 100) : Math.ceil(item.BillAmount / 100);
 
         await db.query(adminQueries.addSaleHistory, [
           item.DocDate,
