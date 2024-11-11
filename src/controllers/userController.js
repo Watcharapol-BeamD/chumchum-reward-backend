@@ -231,7 +231,7 @@ const addBPlusCode = async (req, res) => {
       retailer_name,
       isActivate,
     ]);
-    res.status(200).send({ msg: `Insert ${bplus_code} was added` });
+    res.status(200).send({ msg: `Insert ${bplus_code} completed` });
   } catch {
     res
       .status(404)
