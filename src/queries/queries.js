@@ -21,6 +21,9 @@ const getRewardImage = `SELECT reward_image FROM Rewards WHERE reward_id = ?;`;
 const getCustomerGroup = `SELECT * FROM Customer_Groups`;
 const getCheckRetailerCode = `SELECT * FROM Retailer_Codes WHERE bplus_code = ?`;
 const getActivateCustomer = `UPDATE Retailer_Codes SET activation = 1 WHERE bplus_code = ?`;
+const addNewBPlusCode = `INSERT INTO Retailer_Codes (bplus_code, retailer_name, activation) VALUES (?, ?, ?);
+`;
+
 //----------------------reward----------------------------
 const getReward = `SELECT r.reward_id,r.name,r.description,r.quantity,r.require_point,r.status,r.event_start_date,r.event_end_date,r.reward_image,GROUP_CONCAT(cg.group_name SEPARATOR ', ') AS customer_group_name,
 GROUP_CONCAT(cg.group_id SEPARATOR ', ') AS customer_group_id
@@ -89,4 +92,5 @@ module.exports = {
   getCheckRetailerCode,
   getActivateCustomer,
   getCustomerByPhoneNumber,
+  addNewBPlusCode,
 };

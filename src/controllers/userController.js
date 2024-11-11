@@ -219,6 +219,12 @@ const getCustomerByPhoneNumber = async (req, res) => {
   }
 };
 
+// const addBPlusCode = async (req, res) => {
+//   try {
+//     const results = db.query(queries.)
+//   } catch {}
+// };
+
 module.exports = {
   getAllUser,
   getRegisterNewCustomer,
