@@ -240,16 +240,15 @@ const addBPlusCode = async (req, res) => {
 };
 
 const getEditRetailerName = async (req, res) => {
-  const { bplus_code } = req.body;
+  const { bplus_code, retailer_name } = req.body;
 
-  const isActivate = 0; // activation
   try {
-    await db.query(adminQueries.addNewBPlusCode, [
-      bplus_code,
+    await db.query(adminQueries.getEditRetailerInfo, [
       retailer_name,
-      isActivate,
+      bplus_code,
     ]);
-    res.status(200).send({ msg: `Insert ${bplus_code} complete` });
+
+    res.status(200).send({ msg: `Update complete` });
   } catch {
     res
       .status(404)
@@ -268,4 +267,5 @@ module.exports = {
   getCustomerInfo,
   getCustomerByPhoneNumber,
   addBPlusCode,
+  getEditRetailerName,
 };

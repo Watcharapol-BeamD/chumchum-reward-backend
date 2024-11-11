@@ -16,6 +16,7 @@ router.post('/edit_customer_info',userController.updateCustomerInformation)
 router.post("/refresh_token" ,auth.verifyRefreshToken,userController.getRefreshToken)
 router.post("/customer_info",userController.getCustomerByPhoneNumber)
 router.post("/add_bplus_code",userController.addBPlusCode)
+router.post("/update_retailer_info",userController.getEditRetailerName)
 
 // router.post("/redeem_reward", userController.getRedeemReward);
 
