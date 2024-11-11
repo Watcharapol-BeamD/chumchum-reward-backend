@@ -239,6 +239,24 @@ const addBPlusCode = async (req, res) => {
   }
 };
 
+const getEditRetailerName = async (req, res) => {
+  const { bplus_code } = req.body;
+
+  const isActivate = 0; // activation
+  try {
+    await db.query(adminQueries.addNewBPlusCode, [
+      bplus_code,
+      retailer_name,
+      isActivate,
+    ]);
+    res.status(200).send({ msg: `Insert ${bplus_code} complete` });
+  } catch {
+    res
+      .status(404)
+      .send({ msg: "An error occurred while processing your request." });
+  }
+};
+
 module.exports = {
   getAllUser,
   getRegisterNewCustomer,
