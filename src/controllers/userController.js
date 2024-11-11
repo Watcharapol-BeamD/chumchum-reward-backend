@@ -1,6 +1,6 @@
 const { db } = require("../../db");
 const queries = require("../queries/queries");
-const adminQueries = require("../queries/CustomerQueries");
+const customerQueries = require("../queries/CustomerQueries");
 
 const {
   jwtAccessTokenGenerate,
@@ -226,11 +226,21 @@ const addBPlusCode = async (req, res) => {
 
   const isActivate = 0; // activation
   try {
-    await db.query(adminQueries.addNewBPlusCode, [
+    const [[IsRetailerCodeExist]] = await db.query(
+      customerQueries.getCheckIsBplusCodeExist,
+      [bplus_code]
+    );
+
+    if (IsRetailerCodeExist.count > 0) {
+      return res.status(400).json({ msg: "This bplus code already exist" });
+    }
+
+    await db.query(customerQueries.addNewBPlusCode, [
       bplus_code,
       retailer_name,
       isActivate,
     ]);
+
     res.status(200).send({ msg: `Insert ${bplus_code} completed` });
   } catch {
     res
@@ -243,7 +253,7 @@ const getEditRetailerName = async (req, res) => {
   const { bplus_code, retailer_name } = req.body;
 
   try {
-    await db.query(adminQueries.getEditRetailerInfo, [
+    await db.query(customerQueries.getEditRetailerInfo, [
       retailer_name,
       bplus_code,
     ]);
