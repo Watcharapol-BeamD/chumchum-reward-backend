@@ -90,5 +90,4 @@ module.exports = {
   getCheckRetailerCode,
   getActivateCustomer,
   getCustomerByPhoneNumber,
-  addNewBPlusCode,
 };
