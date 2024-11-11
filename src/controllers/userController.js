@@ -266,6 +266,17 @@ const getEditRetailerName = async (req, res) => {
   }
 };
 
+const getRetailerCodeInfo = async (req, res) => {
+  try {
+    const [results] = await db.query(customerQueries.getRetailerCodeInfo);
+    res.status(200).send(results);
+  } catch {
+    res
+      .status(404)
+      .send({ msg: "An error occurred while processing your request." });
+  }
+};
+
 module.exports = {
   getAllUser,
   getRegisterNewCustomer,
@@ -278,4 +289,5 @@ module.exports = {
   getCustomerByPhoneNumber,
   addBPlusCode,
   getEditRetailerName,
+  getRetailerCodeInfo,
 };
