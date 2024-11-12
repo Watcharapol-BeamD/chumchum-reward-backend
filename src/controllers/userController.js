@@ -284,7 +284,7 @@ const getRetailerCodeInfo = async (req, res) => {
 
 const getRetailerCodeInfoByBPlusCode = async (req, res) => {
   const { bplus_code } = req.body;
-
+ 
   try {
     const [[results]] = await db.query(
       customerQueries.getRetailerCodeInfoByBPlusCode,
