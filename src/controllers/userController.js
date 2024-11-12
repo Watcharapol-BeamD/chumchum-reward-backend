@@ -232,7 +232,7 @@ const addRetailerCodeInfo = async (req, res) => {
     );
 
     if (IsRetailerCodeExist.count > 0) {
-      return res.status(400).json({ msg: "This outlet code already exist." });
+      return res.status(400).json({ msg: "This outlet code already exist.",isFinish:true });
     }
 
     await db.query(customerQueries.addNewRetailerCodeInfo, [
@@ -241,7 +241,7 @@ const addRetailerCodeInfo = async (req, res) => {
       isActivate,
     ]);
 
-    res.status(200).send({ msg: `Insert ${bplus_code} completed` });
+    res.status(200).send({ msg: `Insert ${bplus_code} completed` ,isFinish:false});
   } catch {
     res
       .status(404)
