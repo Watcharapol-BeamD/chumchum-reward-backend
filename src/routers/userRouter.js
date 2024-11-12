@@ -18,6 +18,7 @@ router.post("/refresh_token" ,auth.verifyRefreshToken,userController.getRefreshT
 router.post("/customer_info",userController.getCustomerByPhoneNumber)
 router.post("/add_retailer_code_info",userController.addRetailerCodeInfo)
 router.post("/update_retailer_info",userController.getEditRetailerName)
+router.post("/get_retailer_info_by_outlet_code",userController.getRetailerCodeInfoByBPlusCode)
  
 // router.post("/redeem_reward", userController.getRedeemReward);
 

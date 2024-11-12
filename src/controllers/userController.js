@@ -232,7 +232,9 @@ const addRetailerCodeInfo = async (req, res) => {
     );
 
     if (IsRetailerCodeExist.count > 0) {
-      return res.status(400).json({ msg: "This outlet code already exist.",isFinish:false });
+      return res
+        .status(400)
+        .json({ msg: "This outlet code already exist.", isFinish: false });
     }
 
     await db.query(customerQueries.addNewRetailerCodeInfo, [
@@ -241,11 +243,14 @@ const addRetailerCodeInfo = async (req, res) => {
       isActivate,
     ]);
 
-    res.status(200).send({ msg: `Insert ${bplus_code} completed` ,isFinish:true});
-  } catch {
     res
-      .status(404)
-      .send({ msg: "An error occurred while processing your request.",isFinish:false  });
+      .status(200)
+      .send({ msg: `Insert ${bplus_code} completed`, isFinish: true });
+  } catch {
+    res.status(404).send({
+      msg: "An error occurred while processing your request.",
+      isFinish: false,
+    });
   }
 };
 
@@ -277,6 +282,27 @@ const getRetailerCodeInfo = async (req, res) => {
   }
 };
 
+const getRetailerCodeInfoByBPlusCode = async (req, res) => {
+  const { bplus_code } = req.body;
+
+  try {
+    const [[results]] = await db.query(
+      customerQueries.getRetailerCodeInfoByBPlusCode,
+      [bplus_code]
+    );
+
+    if (results) {
+      res.status(200).send(results);
+    } else {
+      res.status(404).send({ msg: "Not Found" });
+    }
+  } catch {
+    res
+      .status(404)
+      .send({ msg: "An error occurred while processing your request." });
+  }
+};
+
 module.exports = {
   getAllUser,
   getRegisterNewCustomer,
@@ -290,4 +316,5 @@ module.exports = {
   addRetailerCodeInfo,
   getEditRetailerName,
   getRetailerCodeInfo,
+  getRetailerCodeInfoByBPlusCode,
 };
