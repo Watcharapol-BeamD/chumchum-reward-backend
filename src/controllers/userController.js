@@ -1,5 +1,7 @@
 const { db } = require("../../db");
 const queries = require("../queries/queries");
+const customerQueries = require("../queries/CustomerQueries");
+
 const {
   jwtAccessTokenGenerate,
   jwtRefreshTokenGenerate,
@@ -219,6 +221,91 @@ const getCustomerByPhoneNumber = async (req, res) => {
   }
 };
 
+const addRetailerCodeInfo = async (req, res) => {
+  const { bplus_code, retailer_name } = req.body;
+
+  const isActivate = 0; // activation
+  try {
+    const [[IsRetailerCodeExist]] = await db.query(
+      customerQueries.getCheckIsBplusCodeExist,
+      [bplus_code]
+    );
+
+    if (IsRetailerCodeExist.count > 0) {
+      return res
+        .status(400)
+        .json({ msg: "This outlet code already exist.", isFinish: false });
+    }
+
+    await db.query(customerQueries.addNewRetailerCodeInfo, [
+      bplus_code,
+      retailer_name,
+      isActivate,
+    ]);
+
+    res
+      .status(200)
+      .send({ msg: `Insert ${bplus_code} completed`, isFinish: true });
+  } catch {
+    res.status(404).send({
+      msg: "An error occurred while processing your request.",
+      isFinish: false,
+    });
+  }
+};
+
+const getEditRetailerName = async (req, res) => {
+  const { bplus_code, retailer_name } = req.body;
+
+  try {
+    await db.query(customerQueries.getEditRetailerInfo, [
+      retailer_name,
+      bplus_code,
+    ]);
+
+    res.status(200).send({ msg: `Update complete`, isFinish: true });
+  } catch {
+    res
+      .status(404)
+      .send({
+        msg: "An error occurred while processing your request.",
+        isFinish: false,
+      });
+  }
+};
+
+const getRetailerCodeInfo = async (req, res) => {
+  try {
+    const [results] = await db.query(customerQueries.getRetailerCodeInfo);
+    res.status(200).send(results);
+  } catch {
+    res
+      .status(404)
+      .send({ msg: "An error occurred while processing your request." });
+  }
+};
+
+const getRetailerCodeInfoByBPlusCode = async (req, res) => {
+  const { bplus_code } = req.body;
+
+  try {
+    const [[results]] = await db.query(
+      customerQueries.getRetailerCodeInfoByBPlusCode,
+      [bplus_code]
+    );
+
+    if (results) {
+      res.status(200).send(results);
+    } else {
+      res.status(404).send({ msg: "Not Found" });
+    }
+  } catch {
+    res
+      .status(404)
+      .send({ msg: "An error occurred while processing your request." });
+  }
+};
+
 module.exports = {
   getAllUser,
   getRegisterNewCustomer,
@@ -229,4 +316,8 @@ module.exports = {
   getCustomerGroup,
   getCustomerInfo,
   getCustomerByPhoneNumber,
+  addRetailerCodeInfo,
+  getEditRetailerName,
+  getRetailerCodeInfo,
+  getRetailerCodeInfoByBPlusCode,
 };
