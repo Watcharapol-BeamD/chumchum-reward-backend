@@ -263,11 +263,14 @@ const getEditRetailerName = async (req, res) => {
       bplus_code,
     ]);
 
-    res.status(200).send({ msg: `Update complete` });
+    res.status(200).send({ msg: `Update complete`, isFinish: true });
   } catch {
     res
       .status(404)
-      .send({ msg: "An error occurred while processing your request." });
+      .send({
+        msg: "An error occurred while processing your request.",
+        isFinish: false,
+      });
   }
 };
 
@@ -284,7 +287,7 @@ const getRetailerCodeInfo = async (req, res) => {
 
 const getRetailerCodeInfoByBPlusCode = async (req, res) => {
   const { bplus_code } = req.body;
- 
+
   try {
     const [[results]] = await db.query(
       customerQueries.getRetailerCodeInfoByBPlusCode,
