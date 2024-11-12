@@ -221,7 +221,7 @@ const getCustomerByPhoneNumber = async (req, res) => {
   }
 };
 
-const addBPlusCode = async (req, res) => {
+const addRetailerCodeInfo = async (req, res) => {
   const { bplus_code, retailer_name } = req.body;
 
   const isActivate = 0; // activation
@@ -235,7 +235,7 @@ const addBPlusCode = async (req, res) => {
       return res.status(400).json({ msg: "This bplus code already exist" });
     }
 
-    await db.query(customerQueries.addNewBPlusCode, [
+    await db.query(customerQueries.addNewRetailerCodeInfo, [
       bplus_code,
       retailer_name,
       isActivate,
@@ -287,7 +287,7 @@ module.exports = {
   getCustomerGroup,
   getCustomerInfo,
   getCustomerByPhoneNumber,
-  addBPlusCode,
+  addRetailerCodeInfo,
   getEditRetailerName,
   getRetailerCodeInfo,
 };
