@@ -53,10 +53,11 @@ const getRewardAvailableInCurrentTimeView =
   "SELECT * from Rewards_event_Time_length_view";
 const getRewardsByEventTimeAndCustomerGroupView = `select * from Rewards_event_Time_length_BY_Customer_Group_View WHERE group_id = ? AND status = 'Active' ;`;
 
+const getRefreshToken = `SELECT refresh_token FROM Customers WHERE customer_id = ?`;
+const getUpdateRefreshToken = `UPDATE Customers SET refresh_token = ? WHERE customer_id = ?;`;
 //----------------------------useless----------------------------
 // const addNewRefreshToken = `UPDATE Customers SET refresh_token = ? WHERE customer_id = ?;`;
-// const getRefreshToken = `SELECT refresh_token FROM Customers WHERE customer_id = ?`;
-// const getUpdateRefreshToken = `UPDATE Customers SET refresh_token = ? WHERE customer_id = ?;`;
+
 // --------------------------------------------------------
 
 module.exports = {
@@ -90,4 +91,6 @@ module.exports = {
   getCheckRetailerCode,
   getActivateCustomer,
   getCustomerByPhoneNumber,
+  getRefreshToken,
+  getUpdateRefreshToken,
 };
