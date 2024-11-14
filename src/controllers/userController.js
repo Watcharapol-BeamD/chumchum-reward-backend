@@ -1,6 +1,7 @@
 const { db } = require("../../db");
 const queries = require("../queries/queries");
 const customerQueries = require("../queries/CustomerQueries");
+const adminQueries = require("../queries/adminQueries");
 
 const {
   jwtAccessTokenGenerate,
@@ -9,7 +10,7 @@ const {
 
 const getAllUser = async (req, res) => {
   try {
-    const results = await db.query(queries.getAllUser); // Use promise() here
+    const results = await db.query(customerQueries.getAllUser); // Use promise() here
     res.status(200).json(results[0]); // Results is an array; use results[0] to access the data
   } catch (err) {
     console.error(err);
@@ -21,7 +22,7 @@ const getCustomerById = async (req, res) => {
   const { customer_id } = req.body;
 
   try {
-    const results = await db.query(queries.getCustomerById, [customer_id]);
+    const results = await db.query(customerQueries.getCustomerById, [customer_id]);
 
     res.status(200).json(results[0][0]);
   } catch {
@@ -32,7 +33,7 @@ const getCustomerById = async (req, res) => {
 const getCustomerInfo = async (req, res) => {
   // console.log("test")
   try {
-    const results = await db.query(queries.getCustomerInfoList);
+    const results = await db.query(customerQueries.getCustomerInfoList);
 
     const customerList = results[0];
     res.status(200).json(customerList);
@@ -48,7 +49,7 @@ const getRegisterNewCustomer = async (req, res) => {
 
   try {
     // Check if the user already exists in the database
-    const userExistsResult = await db.query(queries.getCheckUserExist, [
+    const userExistsResult = await db.query(customerQueries.getCheckUserExist, [
       customer_id,
     ]);
 
@@ -60,7 +61,7 @@ const getRegisterNewCustomer = async (req, res) => {
     }
 
     //check has retailer code
-    const hasRetailerCodeResult = await db.query(queries.getCheckRetailerCode, [
+    const hasRetailerCodeResult = await db.query(customerQueries.getCheckRetailerCode, [
       bplus_code,
     ]);
 
@@ -75,13 +76,13 @@ const getRegisterNewCustomer = async (req, res) => {
     }
 
     if (hasRetailerCodeResult[0][0].activation === 0) {
-      await db.query(queries.getActivateCustomer, [bplus_code]);
+      await db.query(customerQueries.getActivateCustomer, [bplus_code]);
     }
     // Insert the new user into the database
     const defaultCustomerGroup = 1;
     const defaultPoints = 0;
 
-    await db.query(queries.registerNewCustomer, [
+    await db.query(customerQueries.registerNewCustomer, [
       customer_id,
       retailer_name,
       bplus_code,
@@ -106,7 +107,7 @@ const getIsRegister = async (req, res) => {
   const { customer_id } = req.body;
   try {
     // Check if the user already exists in the database.
-    const userExistsResult = await db.query(queries.getCheckUserExist, [
+    const userExistsResult = await db.query(customerQueries.getCheckUserExist, [
       customer_id,
     ]);
     const existingUserCount = userExistsResult[0][0].count;
@@ -126,12 +127,12 @@ const updateCustomerInformation = async (req, res) => {
   const { province, district, sub_district, post_code, address, customer_id } =
     req.body;
   try {
-    const userExistsResult = await db.query(queries.getCheckUserExist, [
+    const userExistsResult = await db.query(customerQueries.getCheckUserExist, [
       customer_id,
     ]);
     const existingUserCount = userExistsResult[0][0].count;
     if (existingUserCount > 0) {
-      await db.query(queries.updateCustomerInfo, [
+      await db.query(customerQueries.updateCustomerInfo, [
         province,
         district,
         sub_district,
@@ -157,7 +158,7 @@ const getRefreshToken = async (req, res) => {
   const customer_id = req.customer_id;
   const old_refresh_token = req.token;
   try {
-    const results = await db.query(queries.getRefreshToken, [customer_id]);
+    const results = await db.query(customerQueries.getRefreshToken, [customer_id]);
     if (results[0].length === 1) {
       // Check is old refresh token if yes will reject.
       if (old_refresh_token !== results[0][0].refresh_token) {
@@ -167,7 +168,7 @@ const getRefreshToken = async (req, res) => {
       const access_token = jwtAccessTokenGenerate(user);
       const refresh_token = jwtRefreshTokenGenerate(user);
 
-      await db.query(queries.getUpdateRefreshToken, [
+      await db.query(customerQueries.getUpdateRefreshToken, [
         refresh_token,
         customer_id,
       ]);
@@ -190,7 +191,7 @@ const getRefreshToken = async (req, res) => {
 
 const getCustomerGroup = async (req, res) => {
   try {
-    const result = await db.query(queries.getCustomerGroup);
+    const result = await db.query(customerQueries.getCustomerGroup);
     res.status(200).send(result[0]);
   } catch (error) {
     console.log(error);
@@ -204,7 +205,7 @@ const getCustomerByPhoneNumber = async (req, res) => {
   const { phone_number } = req.body;
 
   try {
-    const result = await db.query(queries.getCustomerByPhoneNumber, [
+    const result = await db.query(customerQueries.getCustomerByPhoneNumber, [
       phone_number,
     ]);
 

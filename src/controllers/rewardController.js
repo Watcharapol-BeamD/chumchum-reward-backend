@@ -1,6 +1,9 @@
 require("dotenv").config();
 const { db } = require("../../db");
 const queries = require("../queries/queries.js");
+const rewardQueries = require("../queries/RewardQueries.js");
+const customerQueries = require("../queries/CustomerQueries.js");
+const adminQueries = require("../queries/adminQueries.js");
 
 const deleteFileFromBackend = require("../services/deleteUploadedImage.js");
 const { sendEmail } = require("../services/emailService");
@@ -18,7 +21,7 @@ const fs = require("fs");
 
 const getReward = async (req, res) => {
   try {
-    const results = await db.query(queries.getRewardView);
+    const results = await db.query(rewardQueries.getRewardView);
 
     const transformedData = results[0].map((row) => ({
       reward_id: row.reward_id,
@@ -49,7 +52,7 @@ const getRewardById = async (req, res) => {
   const { reward_id } = req.params;
 
   try {
-    const results = await db.query(queries.getRewardById, [reward_id]);
+    const results = await db.query(rewardQueries.getRewardById, [reward_id]);
     // const reward = results[0][0];
 
     const transformedData = results[0].map((row) => ({
@@ -81,7 +84,7 @@ const getRewardByEventTimeAndCustomerGroup = async (req, res) => {
   const { customerGroupId } = req.body;
   try {
     const results = await db.query(
-      queries.getRewardsByEventTimeAndCustomerGroupView,
+      rewardQueries.getRewardsByEventTimeAndCustomerGroupView,
       [customerGroupId]
     );
     return res.status(200).send(results[0]);
@@ -105,7 +108,7 @@ const getRedeemReward = async (req, res) => {
   // console.log(req.body);
   try {
     // Check if the user already exists in the database
-    const userExistsResult = await db.query(queries.getCheckUserExist, [
+    const userExistsResult = await db.query(customerQueries.getCheckUserExist, [
       customer_id,
     ]);
 
@@ -113,7 +116,7 @@ const getRedeemReward = async (req, res) => {
 
     if (existingUserCount > 0) {
       // Insert the redeem reward into the database.
-      await db.query(queries.keepRewardToHistory, [
+      await db.query(rewardQueries.keepRewardToHistory, [
         customer_id,
         reward_id,
         quantity,
@@ -121,20 +124,20 @@ const getRedeemReward = async (req, res) => {
       ]);
 
       // ------------------- Decrease point--------------------------
-      db.query(queries.decreasePoint, [points_used, customer_id]);
+      db.query(customerQueries.decreasePoint, [points_used, customer_id]);
       // ------------------- Decrease reward--------------------------
-      db.query(queries.decreaseReward, [quantity, reward_id]);
+      db.query(rewardQueries.decreaseReward, [quantity, reward_id]);
       //------------get retailer name by customer_id-----------------
 
       //------------get timestamp from database before send email----
       const redeem_timestamp_result = await db.query(
-        queries.getRedeemRewardTimestamp,
+        rewardQueries.getRedeemRewardTimestamp,
         [customer_id]
       );
       const redeem_timestamp = redeem_timestamp_result[0][0].redeem_timestamp;
 
       //---------------------get reward image------------------------
-      const reward_image_result = await db.query(queries.getRewardImage, [
+      const reward_image_result = await db.query(rewardQueries.getRewardImage, [
         reward_id,
       ]);
       const reward_image = reward_image_result[0][0].reward_image;
@@ -172,7 +175,7 @@ const getRemainReward = async (req, res) => {
   const { reward_id } = req.query;
 
   try {
-    const checkHasReward = await db.query(queries.getRewardRemainQuantity, [
+    const checkHasReward = await db.query(rewardQueries.getRewardRemainQuantity, [
       reward_id,
     ]);
 
@@ -212,7 +215,7 @@ const addNewReward = async (req, res) => {
 
   try {
     //get insert reward and get rewardId, insertId = id same as auto increment id
-    const insertValue = await db.query(queries.addNewReward, [
+    const insertValue = await db.query(rewardQueries.addNewReward, [
       rewardName,
       requirePoints,
       // customerGroup,
@@ -226,7 +229,7 @@ const addNewReward = async (req, res) => {
 
     //add customer group to reward.
     customerGroupId.map(async (value) => {
-      await db.query(queries.addCustomerGroupToReward, [
+      await db.query(rewardQueries.addCustomerGroupToReward, [
         insertValue[0].insertId,
         value,
       ]);
@@ -234,7 +237,7 @@ const addNewReward = async (req, res) => {
 
     //add history && insertValue[0].insertId is reward id
     const rewardId = insertValue[0].insertId;
-    await db.query(queries.adminActionToReward, ["CREATE", adminId, rewardId]);
+    await db.query(adminQueries.adminActionToReward, ["CREATE", adminId, rewardId]);
 
     ftpService.uploadImageToHost(filePath, fileName);
     // Handle success
@@ -276,7 +279,7 @@ const editRewardDetails = async (req, res) => {
     }
 
     const removePromises = groupToRemove.map(async (value) => {
-      await db.query(queries.removeCustomerGroupFromReward, [
+      await db.query(rewardQueries.removeCustomerGroupFromReward, [
         rewardId,
         parseInt(value, 10),
       ]);
@@ -289,7 +292,7 @@ const editRewardDetails = async (req, res) => {
     .then(() => {
       // Update new group
       const addPromises = customerGroupId.map(async (value) => {
-        await db.query(queries.addCustomerGroupToReward, [
+        await db.query(rewardQueries.addCustomerGroupToReward, [
           rewardId,
           parseInt(value, 10),
         ]);
@@ -317,13 +320,13 @@ const editRewardDetails = async (req, res) => {
 
     try {
       //add to history
-      await db.query(queries.adminActionToReward, [
+      await db.query(adminQueries.adminActionToReward, [
         "UPDATE",
         adminId,
         rewardId,
       ]);
 
-      await db.query(queries.updateRewardDetailsAndImage, [
+      await db.query(rewardQueries.updateRewardDetailsAndImage, [
         rewardName,
         requirePoints,
         // customerGroup,
@@ -351,13 +354,13 @@ const editRewardDetails = async (req, res) => {
     //-----------------------if update details no image-----------------------
     try {
       //add to history
-      await db.query(queries.adminActionToReward, [
+      await db.query(adminQueries.adminActionToReward, [
         "UPDATE",
         adminId,
         rewardId,
       ]);
 
-      await db.query(queries.updateRewardDetails, [
+      await db.query(rewardQueries.updateRewardDetails, [
         rewardName,
         requirePoints,
         // customerGroup,
