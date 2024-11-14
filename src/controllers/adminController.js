@@ -2,6 +2,7 @@ require("dotenv").config();
 const { db } = require("../../db");
 const adminQueries = require("../queries/adminQueries");
 const queries = require("../queries/queries.js");
+const customerQueries = require("../queries/CustomerQueries.js");
 
 const {
   jwtAccessTokenGenerate,
@@ -36,7 +37,7 @@ const addNewSaleHistory = async (req, res) => {
           pointAmount,
           customerId,
         ]);
-        await db.query(queries.increasePoint, [pointAmount, customerId]);
+        await db.query(customerQueries.increasePoint, [pointAmount, customerId]);
       }
     }
 
