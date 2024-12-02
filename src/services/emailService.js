@@ -40,7 +40,7 @@ const sendEmail = async (
       from: '"ChumChum" ',
       // to: "chumchumth@gmail.com,nuttapon.wongkongmunsakul@gtnexttech.com,bew_so555@hotmail.com,watcharapol.numpaya@gtnexttech.com",
       // to:"bew15011@gmail.com",
-      to: "no-reply@chumchumreward.com,nuttapon.wongkongmunsakul@gtnexttech.com",
+      to: "no-reply@chumchumreward.com,chumchumth@gmail.com,nuttapon.wongkongmunsakul@gtnexttech.com",
       subject: "Reward Redemption",
       text: "Hello world?",
       html: `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
