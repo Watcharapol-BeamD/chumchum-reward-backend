@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const adminController = require("../controllers/adminController");
 const auth = require('../middleware/auth')
-const upload =require('../middleware/fileStorage')
 //-------------------get request-------------------
  
 // router.get('/send_email',rewardController.getSendEmail)
@@ -14,6 +13,6 @@ router.post("/login", adminController.getLogin);
 router.post("/reset_password",auth.verifyAccessToken, adminController.getResetAdminPassword);
 router.post("/refresh_token" ,auth.verifyRefreshToken,adminController.getRefreshToken)
 // router.post("/redeem_reward", rewardController.getRedeemReward);
-router.post('/upload-sale-history',upload.single('file'),adminController.addNewSaleHistory)
+router.post('/upload-sale-history',adminController.addNewSaleHistory)
 
 module.exports = router;
