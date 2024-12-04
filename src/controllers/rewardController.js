@@ -106,7 +106,6 @@ const getRedeemReward = async (req, res) => {
     retailer_name, //ใช้แค่ตอนส่ง mail
   } = req.body;
 
-  // console.log(req.body);
   try {
     // Check if the user already exists in the database
     const userExistsResult = await db.query(customerQueries.getCheckUserExist, [
