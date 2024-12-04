@@ -3,7 +3,7 @@ const getRedeemRewardTimestamp = "SELECT redeem_timestamp FROM Redeem_Histories 
 const getRewardRemainQuantity = "SELECT reward_id, quantity FROM Rewards WHERE reward_id = ?";
 const getRewardImage = "SELECT reward_image FROM Rewards WHERE reward_id = ?";
 const getReward = `
-  SELECT r.reward_id, r.name, r.description, r.quantity, r.require_point, r.status, r.event_start_date, r.event_end_date, r.reward_image,
+  SELECT r.reward_id, r.name, r.description, r.quantity, r.require_point, r.status, r.event_start_date, r.event_end_date, r.reward_image,reward_type,
          GROUP_CONCAT(cg.group_name SEPARATOR ', ') AS customer_group_name,
          GROUP_CONCAT(cg.group_id SEPARATOR ', ') AS customer_group_id
   FROM Rewards r
@@ -12,7 +12,7 @@ const getReward = `
   GROUP BY r.reward_id
 `;
 const getRewardAvailableInCurrentTime = `
-  SELECT r.reward_id, r.name, r.description, r.quantity, r.require_point, r.status, r.event_start_date, r.event_end_date, r.reward_image,
+  SELECT r.reward_id, r.name, r.description, r.quantity, r.require_point, r.status, r.event_start_date, r.event_end_date, r.reward_image,r.reward_type,
          GROUP_CONCAT(cg.group_name SEPARATOR ', ') AS customer_groups
   FROM Rewards r
   JOIN Reward_Customer_Groups rcg ON r.reward_id = rcg.reward_id
@@ -20,12 +20,13 @@ const getRewardAvailableInCurrentTime = `
   WHERE (NOW() >= r.event_start_date AND NOW() <= r.event_end_date)
   GROUP BY r.reward_id
 `;
+
 const getRewardById = "SELECT * FROM Rewards_View WHERE reward_id = ?";
-const addNewReward = "INSERT INTO Rewards (name, require_point, quantity, status, event_start_date, event_end_date, description, reward_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+const addNewReward = "INSERT INTO Rewards (name, require_point, quantity, status, event_start_date, event_end_date, description,reward_type ,reward_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 const addCustomerGroupToReward = "INSERT INTO Reward_Customer_Groups (reward_id, group_id) VALUES (?, ?) ON DUPLICATE KEY UPDATE reward_id = VALUES(reward_id)";
 const decreaseReward = "UPDATE Rewards SET quantity = quantity - ? WHERE reward_id = ?";
-const updateRewardDetails = "UPDATE Rewards SET name = ?, require_point = ?, quantity = ?, status = ?, event_start_date = ?, event_end_date = ?, description = ? WHERE reward_id = ?";
-const updateRewardDetailsAndImage = "UPDATE Rewards SET name = ?, require_point = ?, quantity = ?, status = ?, event_start_date = ?, event_end_date = ?, description = ?, reward_image = ? WHERE reward_id = ?";
+const updateRewardDetails = "UPDATE Rewards SET name = ?, require_point = ?, quantity = ?, status = ?, event_start_date = ?, event_end_date = ?, description = ?,reward_type= ? WHERE reward_id = ?";
+const updateRewardDetailsAndImage = "UPDATE Rewards SET name = ?, require_point = ?, quantity = ?, status = ?, event_start_date = ?, event_end_date = ?, description = ?,reward_type= ?, reward_image = ? WHERE reward_id = ?";
 const getCustomerGroupOfReward = "SELECT * FROM Reward_Customer_Groups WHERE reward_id = ?";
 const removeCustomerGroupFromReward = "DELETE FROM Reward_Customer_Groups WHERE reward_id = ? AND group_id = ?";
 const getRewardView = "SELECT * FROM Rewards_View";

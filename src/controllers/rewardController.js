@@ -65,6 +65,7 @@ const getRewardById = async (req, res) => {
       event_start_date: row.event_start_date,
       event_end_date: row.event_end_date,
       reward_image: row.reward_image,
+      reward_type: row.reward_type,
       customer_group_id: row.customer_group_id
         .split(", ")
         .map((group) => parseInt(group.trim(), 10)),
@@ -175,9 +176,10 @@ const getRemainReward = async (req, res) => {
   const { reward_id } = req.query;
 
   try {
-    const checkHasReward = await db.query(rewardQueries.getRewardRemainQuantity, [
-      reward_id,
-    ]);
+    const checkHasReward = await db.query(
+      rewardQueries.getRewardRemainQuantity,
+      [reward_id]
+    );
 
     res.json(checkHasReward.rows[0].reward_id);
   } catch (err) {
@@ -211,6 +213,7 @@ const addNewReward = async (req, res) => {
     startDate,
     endDate,
     description,
+    rewardType,
   } = req.body;
 
   try {
@@ -224,6 +227,7 @@ const addNewReward = async (req, res) => {
       startDate,
       endDate,
       description,
+      rewardType,
       fileName,
     ]);
 
@@ -237,7 +241,11 @@ const addNewReward = async (req, res) => {
 
     //add history && insertValue[0].insertId is reward id
     const rewardId = insertValue[0].insertId;
-    await db.query(adminQueries.adminActionToReward, ["CREATE", adminId, rewardId]);
+    await db.query(adminQueries.adminActionToReward, [
+      "CREATE",
+      adminId,
+      rewardId,
+    ]);
 
     ftpService.uploadImageToHost(filePath, fileName);
     // Handle success
@@ -265,6 +273,7 @@ const editRewardDetails = async (req, res) => {
     startDate,
     endDate,
     description,
+    rewardType,
     rewardId,
     imageName,
     oldImageName,
@@ -336,6 +345,7 @@ const editRewardDetails = async (req, res) => {
         endDate,
         description,
         fileName,
+        rewardType,
         rewardId,
       ]);
 
@@ -369,6 +379,7 @@ const editRewardDetails = async (req, res) => {
         startDate,
         endDate,
         description,
+        rewardType,
         rewardId,
       ]);
 
