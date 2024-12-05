@@ -399,10 +399,9 @@ const addNewCouponCode = async (req, res) => {
  
   try {
     for (const item of couponList) {
-      console.log(item)
+ 
       // Check if the coupon code already exists
       const [existingCoupon] = await db.query(rewardQueries.checkIsCouponExist, [item.CouponCode]);
-      
       if (existingCoupon.length > 0) {
  
         return res.status(409).send(`Duplicate coupon code detected: ${item.CouponCode}`);
@@ -415,7 +414,7 @@ const addNewCouponCode = async (req, res) => {
     res.status(200).send("Coupon codes added successfully.");
   } catch (error) {
     console.error("Error adding coupon codes:", error);
-    res.status(500).send("An error occurred while adding coupon codes.");
+    res.status(500).send({isUploadCSVError: true, csvMsg: "An error occurred while adding coupon codes."});
   }
 };
 
