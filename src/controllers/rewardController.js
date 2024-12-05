@@ -65,6 +65,7 @@ const getRewardById = async (req, res) => {
       event_start_date: row.event_start_date,
       event_end_date: row.event_end_date,
       reward_image: row.reward_image,
+      reward_type: row.reward_type,
       customer_group_id: row.customer_group_id
         .split(", ")
         .map((group) => parseInt(group.trim(), 10)),
@@ -105,7 +106,6 @@ const getRedeemReward = async (req, res) => {
     retailer_name, //ใช้แค่ตอนส่ง mail
   } = req.body;
 
-  // console.log(req.body);
   try {
     // Check if the user already exists in the database
     const userExistsResult = await db.query(customerQueries.getCheckUserExist, [
@@ -175,9 +175,10 @@ const getRemainReward = async (req, res) => {
   const { reward_id } = req.query;
 
   try {
-    const checkHasReward = await db.query(rewardQueries.getRewardRemainQuantity, [
-      reward_id,
-    ]);
+    const checkHasReward = await db.query(
+      rewardQueries.getRewardRemainQuantity,
+      [reward_id]
+    );
 
     res.json(checkHasReward.rows[0].reward_id);
   } catch (err) {
@@ -211,6 +212,7 @@ const addNewReward = async (req, res) => {
     startDate,
     endDate,
     description,
+    rewardType,
   } = req.body;
 
   try {
@@ -224,6 +226,7 @@ const addNewReward = async (req, res) => {
       startDate,
       endDate,
       description,
+      rewardType,
       fileName,
     ]);
 
@@ -237,7 +240,11 @@ const addNewReward = async (req, res) => {
 
     //add history && insertValue[0].insertId is reward id
     const rewardId = insertValue[0].insertId;
-    await db.query(adminQueries.adminActionToReward, ["CREATE", adminId, rewardId]);
+    await db.query(adminQueries.adminActionToReward, [
+      "CREATE",
+      adminId,
+      rewardId,
+    ]);
 
     ftpService.uploadImageToHost(filePath, fileName);
     // Handle success
@@ -265,6 +272,7 @@ const editRewardDetails = async (req, res) => {
     startDate,
     endDate,
     description,
+    rewardType,
     rewardId,
     imageName,
     oldImageName,
@@ -336,6 +344,7 @@ const editRewardDetails = async (req, res) => {
         endDate,
         description,
         fileName,
+        rewardType,
         rewardId,
       ]);
 
@@ -369,6 +378,7 @@ const editRewardDetails = async (req, res) => {
         startDate,
         endDate,
         description,
+        rewardType,
         rewardId,
       ]);
 
@@ -384,6 +394,32 @@ const editRewardDetails = async (req, res) => {
   }
 };
 
+const addNewCouponCode = async (req, res) => {
+  const couponList = req.body;
+ 
+  try {
+    for (const item of couponList) {
+ 
+      // Check if the coupon code already exists
+      const [existingCoupon] = await db.query(rewardQueries.checkIsCouponExist, [item.CouponCode]);
+
+      if (existingCoupon.length > 0) {
+ 
+        return res.status(409).send(`Duplicate coupon code detected: ${item.CouponCode}`);
+      }
+
+      // Add the new coupon code
+      await db.query(rewardQueries.addCoupon, [item.CouponCode, item.RewardID]);
+    }
+
+    res.status(200).send("Coupon codes added successfully.");
+  } catch (error) {
+    console.error("Error adding coupon codes:", error);
+    res.status(500).send({isUploadCSVError: true, csvMsg: "An error occurred while adding coupon codes."});
+  }
+};
+
+
 module.exports = {
   getRedeemReward,
   getSendEmail,
@@ -393,4 +429,5 @@ module.exports = {
   addNewReward,
   editRewardDetails,
   getRewardByEventTimeAndCustomerGroup,
+  addNewCouponCode,
 };

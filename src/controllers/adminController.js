@@ -44,6 +44,10 @@ const addNewSaleHistory = async (req, res) => {
           pointAmount,
           customerId,
         ]);
+      }else{
+        return res
+        .status(500)
+        .send({ isUploadCSVError: true, csvMsg: "Wrong format or not found some customer!" });
       }
     }
 
