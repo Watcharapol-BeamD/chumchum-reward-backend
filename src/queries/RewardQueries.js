@@ -33,6 +33,9 @@ const getRewardView = "SELECT * FROM Rewards_View";
 const getRewardAvailableInCurrentTimeView = "SELECT * FROM Rewards_event_Time_length_view";
 const getRewardsByEventTimeAndCustomerGroupView = "SELECT * FROM Rewards_event_Time_length_BY_Customer_Group_View WHERE group_id = ? AND status = 'Active'";
 const addSaleHistory = "INSERT INTO Points_Transactions (doc_date, doc_ref, bill_amount, point_amount, fk_customer_id) VALUES (?, ?, ?, ?, ?)";
+const addCoupon = `INSERT INTO Coupons (coupon_code, fk_reward_id) VALUES (?, ?);`;
+const checkIsCouponExist = 'SELECT * FROM Coupons WHERE coupon_code = ?'
+   
 
 module.exports = {
     keepRewardToHistory,
@@ -52,5 +55,7 @@ module.exports = {
     getRewardView,
     getRewardAvailableInCurrentTimeView,
     getRewardsByEventTimeAndCustomerGroupView,
-    addSaleHistory
+    addSaleHistory,
+    addCoupon,
+    checkIsCouponExist
 }

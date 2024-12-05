@@ -37,5 +37,6 @@ router.post("/redeem_reward", rewardController.getRedeemReward);
 router.post("/add_new_reward",upload.single('image'), rewardController.addNewReward);
 router.post("/edit_reward_details",[auth.verifyAccessToken,upload.single('image')],rewardController.editRewardDetails)
 router.post("/get_reward_by_time_and_group",rewardController.getRewardByEventTimeAndCustomerGroup)
+router.post('/upload-coupon-list',rewardController.addNewCouponCode)
 
 module.exports = router;
