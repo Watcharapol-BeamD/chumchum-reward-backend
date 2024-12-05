@@ -402,6 +402,7 @@ const addNewCouponCode = async (req, res) => {
  
       // Check if the coupon code already exists
       const [existingCoupon] = await db.query(rewardQueries.checkIsCouponExist, [item.CouponCode]);
+
       if (existingCoupon.length > 0) {
  
         return res.status(409).send(`Duplicate coupon code detected: ${item.CouponCode}`);
