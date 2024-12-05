@@ -21,6 +21,7 @@
 - Added RESTful API endpoints for coupon management:
   - `POST /api/v1/reward/upload-coupon-list`
 - Basic error handling
+- Add relate query for coupon
 
 ## Installation
 
