@@ -10,7 +10,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "MIT",
+  "license": "ISC",
   "dependencies": {
     "@line/bot-sdk": "^8.0.0",
     "axios": "^1.5.1",
