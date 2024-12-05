@@ -104,8 +104,9 @@ const getRedeemReward = async (req, res) => {
     reward_name, //ใช้แค่ตอนส่ง mail
     bplus_code, //ใช้แค่ตอนส่ง mail
     retailer_name, //ใช้แค่ตอนส่ง mail
+    reward_type,
   } = req.body;
-
+ 
   try {
     // Check if the user already exists in the database
     const userExistsResult = await db.query(customerQueries.getCheckUserExist, [
@@ -396,16 +397,19 @@ const editRewardDetails = async (req, res) => {
 
 const addNewCouponCode = async (req, res) => {
   const couponList = req.body;
- 
+
   try {
     for (const item of couponList) {
- 
       // Check if the coupon code already exists
-      const [existingCoupon] = await db.query(rewardQueries.checkIsCouponExist, [item.CouponCode]);
+      const [existingCoupon] = await db.query(
+        rewardQueries.checkIsCouponExist,
+        [item.CouponCode]
+      );
 
       if (existingCoupon.length > 0) {
- 
-        return res.status(409).send(`Duplicate coupon code detected: ${item.CouponCode}`);
+        return res
+          .status(409)
+          .send(`Duplicate coupon code detected: ${item.CouponCode}`);
       }
 
       // Add the new coupon code
@@ -415,10 +419,12 @@ const addNewCouponCode = async (req, res) => {
     res.status(200).send("Coupon codes added successfully.");
   } catch (error) {
     console.error("Error adding coupon codes:", error);
-    res.status(500).send({isUploadCSVError: true, csvMsg: "An error occurred while adding coupon codes."});
+    res.status(500).send({
+      isUploadCSVError: true,
+      csvMsg: "An error occurred while adding coupon codes.",
+    });
   }
 };
-
 
 module.exports = {
   getRedeemReward,
