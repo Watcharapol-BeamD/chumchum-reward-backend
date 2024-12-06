@@ -44,10 +44,12 @@ const getReward = async (req, res) => {
         .map((group) => group.trim()),
     }));
 
-    res.status(200).json(transformedData);
+    return res.status(200).json(transformedData);
   } catch (err) {
     console.log(err);
-    res.status(500).send("An error occurred while processing your request.");
+    return res
+      .status(500)
+      .send("An error occurred while processing your request.");
   }
 };
 
@@ -77,10 +79,10 @@ const getRewardById = async (req, res) => {
         .map((group) => group.trim()),
     }));
 
-    res.status(200).json(transformedData[0]);
+    return res.status(200).json(transformedData[0]);
   } catch (err) {
     console.log(err);
-    res.status(500).send("An error occurred while processing your request.");
+    return res.status(500).send("An error occurred while processing your request.");
   }
 };
 
@@ -94,7 +96,7 @@ const getRewardByEventTimeAndCustomerGroup = async (req, res) => {
     return res.status(200).send(results[0]);
   } catch (err) {
     console.log(err);
-    res.status(500).send("An error occurred while processing your request.");
+    return res.status(500).send("An error occurred while processing your request.");
   }
 };
 
@@ -220,10 +222,10 @@ const getRemainReward = async (req, res) => {
       [reward_id]
     );
 
-    res.json(checkHasReward.rows[0].reward_id);
+    return res.json(checkHasReward.rows[0].reward_id);
   } catch (err) {
     console.error(err);
-    res
+    return res
       .status(500)
       .send("An error occurred while processing your request." + err);
   }
@@ -288,13 +290,13 @@ const addNewReward = async (req, res) => {
 
     ftpService.uploadImageToHost(filePath, fileName);
     // Handle success
-    res
+    return res
       .status(200)
       .send({ msg: "Add new reward successfully.", isFinish: true });
   } catch (error) {
     // Handle error
     console.error(error);
-    res.status(500).send("Error while add new reward.");
+    return res.status(500).send("Error while add new reward.");
   }
 };
 
@@ -454,10 +456,10 @@ const addNewCouponCode = async (req, res) => {
       await db.query(rewardQueries.addCoupon, [item.CouponCode, item.RewardID]);
     }
 
-    res.status(200).send("Coupon codes added successfully.");
+    return  res.status(200).send("Coupon codes added successfully.");
   } catch (error) {
     console.error("Error adding coupon codes:", error);
-    res.status(500).send({
+    return res.status(500).send({
       isUploadCSVError: true,
       csvMsg: "An error occurred while adding coupon codes.",
     });
