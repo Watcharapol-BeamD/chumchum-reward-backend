@@ -158,6 +158,7 @@ const getRedeemReward = async (req, res) => {
 
       //------------------------push line message----------------
       //customer_id ต้องเป็นของ line
+
       await sendLineMessage(customer_id, reward_image, reward_name).then(() => {
         console.log("Line message send successfully");
       });
@@ -171,14 +172,16 @@ const getRedeemReward = async (req, res) => {
 
         if (couponCodeItem.length !== 0) {
           const coupon = couponCodeItem[0].coupon_code;
-          await db.query(rewardQueries.updateCouponStatus, [
-            couponStatus,
-            coupon,
-          ]);
+          // await db.query(rewardQueries.updateCouponStatus, [
+          //   couponStatus,
+          //   coupon,
+          // ]);
 
-          await sendCouponLineMessage(customer_id, coupon).then(() => {
-            console.log("Line message send successfully");
-          });
+          await sendCouponLineMessage(customer_id,reward_name, reward_image, coupon).then(
+            () => {
+              console.log("Line message send successfully");
+            }
+          );
         } else {
           res.status(404).json({ msg: "ไม่พบคูปอง", isRedeemSuccess: false });
         }
