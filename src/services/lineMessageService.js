@@ -17,10 +17,10 @@ const sendLineMessage = async (customer_id, reward_image, reward_name) => {
               url: `${process.env.IMAGE_URL}images/${reward_image}`,
               size: "full",
               aspectMode: "cover",
-              aspectRatio: "16:9",
+              aspectRatio: "1:1",
             },
           ],
-          paddingAll: "0px",
+          paddingAll: "20px",
         },
         body: {
           type: "box",
@@ -167,10 +167,11 @@ const sendCouponLineMessage = async (
               style: "primary",
               color: "#1DB446",
               action: {
-                type: "postback",
-                label: "รับรหัสคูปอง",
-                data: `action=copy&code=${coupon}`,
-                displayText: `${coupon}`,
+                type: "clipboard",
+                label: "คัดลอกรหัสคูปอง",
+                clipboardText: `${coupon}`,
+                // data: `action=copy&code=${coupon}`,
+                // displayText: `${coupon}`,
               },
             },
             {
