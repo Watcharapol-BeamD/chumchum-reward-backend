@@ -119,6 +119,25 @@ const getRedeemReward = async (req, res) => {
     const existingUserCount = userExistsResult[0][0].count;
 
     if (existingUserCount > 0) {
+      //handle reward type coupon
+      let coupon = "";
+      if (reward_type === "COUPON") {
+        const [couponCodeItem] = await db.query(rewardQueries.getCouponCode, [
+          reward_id,
+        ]);
+        if (couponCodeItem.length === 0) {
+          return res
+            .status(404)
+            .json({ msg: "คูปองหมด", isRedeemSuccess: false });
+        }
+        const couponStatus = 1; //status 1=activate
+        coupon = couponCodeItem[0].coupon_code;
+        await db.query(rewardQueries.updateCouponStatus, [
+          couponStatus,
+          coupon,
+        ]); // Activate coupon
+      }
+
       // Insert the redeem reward into the database.
       await db.query(rewardQueries.keepRewardToHistory, [
         customer_id,
@@ -165,38 +184,30 @@ const getRedeemReward = async (req, res) => {
 
       //------------------ Reward with type coupon -------------------
       if (reward_type === "COUPON") {
-        const couponStatus = 1; //status 1=activate
-        const [couponCodeItem] = await db.query(rewardQueries.getCouponCode, [
-          reward_id,
-        ]);
-
-        if (couponCodeItem.length !== 0) {
-          const coupon = couponCodeItem[0].coupon_code;
-          // await db.query(rewardQueries.updateCouponStatus, [
-          //   couponStatus,
-          //   coupon,
-          // ]);
-
-          await sendCouponLineMessage(customer_id,reward_name, reward_image, coupon).then(
-            () => {
-              console.log("Line message send successfully");
-            }
-          );
-        } else {
-          res.status(404).json({ msg: "ไม่พบคูปอง", isRedeemSuccess: false });
-        }
+        await sendCouponLineMessage(
+          customer_id,
+          reward_name,
+          reward_image,
+          coupon
+        ).then(() => {
+          console.log("Line message send successfully");
+        });
       }
 
-      res.status(201).json({ msg: "redeem successful", isRedeemSuccess: true });
+      return res
+        .status(201)
+        .json({ msg: "redeem successful", isRedeemSuccess: true });
     } else {
-      res.status(404).json({
+      return res.status(404).json({
         msg: "Redemption Failed: User Not Found",
         isRedeemSuccess: false,
       });
     }
   } catch (err) {
     console.log(err);
-    res.status(500).send("An error occurred while processing your request.");
+    return res
+      .status(500)
+      .send("An error occurred while processing your request.");
   }
 };
 
