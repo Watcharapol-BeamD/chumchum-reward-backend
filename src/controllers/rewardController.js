@@ -7,7 +7,10 @@ const adminQueries = require("../queries/adminQueries.js");
 
 const deleteFileFromBackend = require("../services/deleteUploadedImage.js");
 const { sendEmail } = require("../services/emailService");
-const { sendLineMessage } = require("../services/lineMessageService.js");
+const {
+  sendLineMessage,
+  sendCouponLineMessage,
+} = require("../services/lineMessageService.js");
 const ftpService = require("../services/ftpService.js");
 const { default: ShortUniqueId } = require("short-unique-id");
 
@@ -106,7 +109,7 @@ const getRedeemReward = async (req, res) => {
     retailer_name, //ใช้แค่ตอนส่ง mail
     reward_type,
   } = req.body;
- 
+
   try {
     // Check if the user already exists in the database
     const userExistsResult = await db.query(customerQueries.getCheckUserExist, [
@@ -126,10 +129,10 @@ const getRedeemReward = async (req, res) => {
 
       // ------------------- Decrease point--------------------------
       db.query(customerQueries.decreasePoint, [points_used, customer_id]);
-      // ------------------- Decrease reward--------------------------
+      // ------------------- Decrease reward-------------------------
       db.query(rewardQueries.decreaseReward, [quantity, reward_id]);
-      //------------get retailer name by customer_id-----------------
 
+      //------------get retailer name by customer_id-----------------
       //------------get timestamp from database before send email----
       const redeem_timestamp_result = await db.query(
         rewardQueries.getRedeemRewardTimestamp,
@@ -158,6 +161,28 @@ const getRedeemReward = async (req, res) => {
       await sendLineMessage(customer_id, reward_image, reward_name).then(() => {
         console.log("Line message send successfully");
       });
+
+      //------------------ Reward with type coupon -------------------
+      if (reward_type === "COUPON") {
+        const couponStatus = 1; //status 1=activate
+        const [couponCodeItem] = await db.query(rewardQueries.getCouponCode, [
+          reward_id,
+        ]);
+
+        if (couponCodeItem.length !== 0) {
+          const coupon = couponCodeItem[0].coupon_code;
+          await db.query(rewardQueries.updateCouponStatus, [
+            couponStatus,
+            coupon,
+          ]);
+
+          await sendCouponLineMessage(customer_id, coupon).then(() => {
+            console.log("Line message send successfully");
+          });
+        } else {
+          res.status(404).json({ msg: "ไม่พบคูปอง", isRedeemSuccess: false });
+        }
+      }
 
       res.status(201).json({ msg: "redeem successful", isRedeemSuccess: true });
     } else {
@@ -334,7 +359,6 @@ const editRewardDetails = async (req, res) => {
         adminId,
         rewardId,
       ]);
-
       await db.query(rewardQueries.updateRewardDetailsAndImage, [
         rewardName,
         requirePoints,
@@ -344,8 +368,8 @@ const editRewardDetails = async (req, res) => {
         startDate,
         endDate,
         description,
-        fileName,
         rewardType,
+        fileName,
         rewardId,
       ]);
 
