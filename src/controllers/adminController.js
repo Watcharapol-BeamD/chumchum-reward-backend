@@ -44,14 +44,17 @@ const addNewSaleHistory = async (req, res) => {
           pointAmount,
           customerId,
         ]);
-      }else{
+      } else {
         return res
-        .status(500)
-        .send({ isUploadCSVError: true, csvMsg: "Wrong format or not found some customer!" });
+          .status(500)
+          .send({
+            isUploadCSVError: true,
+            csvMsg: "Wrong format or not found some customer!",
+          });
       }
     }
 
-    res.status(200).send("Sale history added successfully.");
+    return res.status(200).send("Sale history added successfully.");
   } catch (error) {
     // console.error("Error adding sale history:", error);
     if (error.code === "ER_TRUNCATED_WRONG_VALUE") {
@@ -59,7 +62,7 @@ const addNewSaleHistory = async (req, res) => {
         .status(500)
         .send({ isUploadCSVError: true, csvMsg: "Wrong format" });
     }
-    res
+    return res
       .status(500)
       .send({ isUploadCSVError: true, csvMsg: "Internal Server Error" });
   }
@@ -118,14 +121,14 @@ const getResetAdminPassword = async (req, res) => {
 
     //update new password
     await db.query(adminQueries.resetPassword, [encryptPassword, admin_id]);
-    res.status(200).send({
+    return res.status(200).send({
       resetPasswordMsg: "Reset password success.",
       is_reset_finish: true,
       is_first_login: 0,
     });
   } catch (err) {
     console.log(err);
-    res.status(500).send({
+    return res.status(500).send({
       resetPasswordMsg: "An error occurred while processing your request.",
       is_first_login: 1,
     });
@@ -233,17 +236,17 @@ const getRefreshToken = async (req, res) => {
 
       await db.query(adminQueries.addRefreshToken, [refresh_token, admin_id]);
 
-      res.status(200).send({
+      return res.status(200).send({
         access_token: access_token,
         refresh_token: refresh_token,
         msg: "token refresh complete Complete",
       });
     } else {
-      res.status(401).send({ msg: "Invalid credentials" });
+      return res.status(401).send({ msg: "Invalid credentials" });
     }
   } catch (err) {
     console.log(err);
-    res
+    return res
       .status(500)
       .send({ msg: "An error occurred while processing your request." });
   }

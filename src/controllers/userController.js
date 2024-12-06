@@ -11,10 +11,12 @@ const {
 const getAllUser = async (req, res) => {
   try {
     const results = await db.query(customerQueries.getAllUser); // Use promise() here
-    res.status(200).json(results[0]); // Results is an array; use results[0] to access the data
+    return res.status(200).json(results[0]); // Results is an array; use results[0] to access the data
   } catch (err) {
     console.error(err);
-    res.status(500).json({ msg: "An error occurred while fetching users." });
+    return res
+      .status(500)
+      .json({ msg: "An error occurred while fetching users." });
   }
 };
 
@@ -22,11 +24,15 @@ const getCustomerById = async (req, res) => {
   const { customer_id } = req.body;
 
   try {
-    const results = await db.query(customerQueries.getCustomerById, [customer_id]);
+    const results = await db.query(customerQueries.getCustomerById, [
+      customer_id,
+    ]);
 
-    res.status(200).json(results[0][0]);
+    return res.status(200).json(results[0][0]);
   } catch {
-    res.status(500).json({ msg: "An error occurred while fetching users." });
+    return res
+      .status(500)
+      .json({ msg: "An error occurred while fetching users." });
   }
 };
 
@@ -36,10 +42,12 @@ const getCustomerInfo = async (req, res) => {
     const results = await db.query(customerQueries.getCustomerInfoList);
 
     const customerList = results[0];
-    res.status(200).json(customerList);
+    return res.status(200).json(customerList);
   } catch (err) {
     console.error(err);
-    res.status(500).send("An error occurred while processing your request.");
+    return res
+      .status(500)
+      .send("An error occurred while processing your request.");
   }
 };
 
@@ -61,9 +69,10 @@ const getRegisterNewCustomer = async (req, res) => {
     }
 
     //check has retailer code
-    const hasRetailerCodeResult = await db.query(customerQueries.getCheckRetailerCode, [
-      bplus_code,
-    ]);
+    const hasRetailerCodeResult = await db.query(
+      customerQueries.getCheckRetailerCode,
+      [bplus_code]
+    );
 
     if (!hasRetailerCodeResult[0].length) {
       return res
@@ -91,13 +100,13 @@ const getRegisterNewCustomer = async (req, res) => {
       defaultCustomerGroup,
     ]);
 
-    res.status(201).json({
+    return res.status(201).json({
       msg: "Registration successful",
       isRegisterPass: true,
     });
   } catch (err) {
     console.error(err);
-    res
+    return res
       .status(500)
       .json({ msg: "An error occurred while registering the user" });
   }
@@ -113,13 +122,15 @@ const getIsRegister = async (req, res) => {
     const existingUserCount = userExistsResult[0][0].count;
 
     if (existingUserCount > 0) {
-      res.status(200).json({ isRegister: true });
+      return res.status(200).json({ isRegister: true });
     } else {
-      res.status(200).json({ isRegister: false });
+      return res.status(200).json({ isRegister: false });
     }
   } catch (err) {
     console.error(err);
-    res.status(500).send("An error occurred while processing your request.");
+    return res
+      .status(500)
+      .send("An error occurred while processing your request.");
   }
 };
 
@@ -140,16 +151,18 @@ const updateCustomerInformation = async (req, res) => {
         address,
         customer_id,
       ]);
-      res.status(200).json({
+      return res.status(200).json({
         msg: "Update customer information successful.",
         isFinish: true,
       });
     } else {
-      res.status(404).json({ msg: "User not found.", isFinish: false });
+      return res.status(404).json({ msg: "User not found.", isFinish: false });
     }
   } catch (err) {
     console.error(err);
-    res.status(500).send("An error occurred while processing your request.");
+    return res
+      .status(500)
+      .send("An error occurred while processing your request.");
   }
 };
 
@@ -158,7 +171,9 @@ const getRefreshToken = async (req, res) => {
   const customer_id = req.customer_id;
   const old_refresh_token = req.token;
   try {
-    const results = await db.query(customerQueries.getRefreshToken, [customer_id]);
+    const results = await db.query(customerQueries.getRefreshToken, [
+      customer_id,
+    ]);
     if (results[0].length === 1) {
       // Check is old refresh token if yes will reject.
       if (old_refresh_token !== results[0][0].refresh_token) {
@@ -173,13 +188,13 @@ const getRefreshToken = async (req, res) => {
         customer_id,
       ]);
 
-      res.status(200).send({
+      return res.status(200).send({
         access_token: access_token,
         refresh_token: refresh_token,
         msg: "token refresh complete",
       });
     } else {
-      res.status(401).send({ msg: "Invalid credentials" });
+      return res.status(401).send({ msg: "Invalid credentials" });
     }
   } catch (err) {
     console.log(err);
@@ -192,7 +207,7 @@ const getRefreshToken = async (req, res) => {
 const getCustomerGroup = async (req, res) => {
   try {
     const result = await db.query(customerQueries.getCustomerGroup);
-    res.status(200).send(result[0]);
+    return res.status(200).send(result[0]);
   } catch (error) {
     console.log(error);
     res
@@ -214,7 +229,7 @@ const getCustomerByPhoneNumber = async (req, res) => {
         .status(200)
         .send({ customer: result[0][0], msg: "user not found" });
     }
-    res.status(200).send({ customer: result[0][0], msg: "user found" });
+    return res.status(200).send({ customer: result[0][0], msg: "user found" });
   } catch {
     res
       .status(404)
@@ -248,7 +263,7 @@ const addRetailerCodeInfo = async (req, res) => {
       .status(200)
       .send({ msg: `Insert ${bplus_code} completed`, isFinish: true });
   } catch {
-    res.status(404).send({
+    return res.status(404).send({
       msg: "An error occurred while processing your request.",
       isFinish: false,
     });
@@ -264,21 +279,19 @@ const getEditRetailerName = async (req, res) => {
       bplus_code,
     ]);
 
-    res.status(200).send({ msg: `Update complete`, isFinish: true });
+    return res.status(200).send({ msg: `Update complete`, isFinish: true });
   } catch {
-    res
-      .status(404)
-      .send({
-        msg: "An error occurred while processing your request.",
-        isFinish: false,
-      });
+    return res.status(404).send({
+      msg: "An error occurred while processing your request.",
+      isFinish: false,
+    });
   }
 };
 
 const getRetailerCodeInfo = async (req, res) => {
   try {
     const [results] = await db.query(customerQueries.getRetailerCodeInfo);
-    res.status(200).send(results);
+    return res.status(200).send(results);
   } catch {
     res
       .status(404)
@@ -296,12 +309,12 @@ const getRetailerCodeInfoByBPlusCode = async (req, res) => {
     );
 
     if (results) {
-      res.status(200).send(results);
+      return res.status(200).send(results);
     } else {
-      res.status(404).send({ msg: "Not Found" });
+      return res.status(404).send({ msg: "Not Found" });
     }
   } catch {
-    res
+    return res
       .status(404)
       .send({ msg: "An error occurred while processing your request." });
   }
