@@ -181,7 +181,9 @@ const getRedeemReward = async (req, res) => {
         bplus_code,
         reward_name,
         redeem_timestamp,
-        reward_image
+        reward_image,
+        points_used,
+        doc_ref
       );
 
       //------------------------push line message----------------
