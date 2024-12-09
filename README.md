@@ -5,7 +5,7 @@
 
 ## Table of Contents
 
-- [Features](#features)
+- [Changelog](#changelog)
 - [Installation](#installation)
 - [Version](#version)
 
@@ -17,11 +17,12 @@
 
 ### Changelog
 
-#### 1.0.3
-- Added RESTful API endpoints for coupon management:
+#### 1.0.4
+- Add Line flex include doc_ref and points_used
   - `POST /api/v1/reward/upload-coupon-list`
 - Basic error handling
-- Add relate query for coupon
+- Add email template include doc_ref and points_used
+
 
 ## Installation
 
