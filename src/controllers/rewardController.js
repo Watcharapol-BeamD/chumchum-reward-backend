@@ -7,7 +7,10 @@ const adminQueries = require("../queries/adminQueries.js");
 
 const deleteFileFromBackend = require("../services/deleteUploadedImage.js");
 const { sendEmail } = require("../services/emailService");
-const { sendLineMessage } = require("../services/lineMessageService.js");
+const {
+  sendLineMessage,
+  sendCouponLineMessage,
+} = require("../services/lineMessageService.js");
 const ftpService = require("../services/ftpService.js");
 const { default: ShortUniqueId } = require("short-unique-id");
 
@@ -41,10 +44,12 @@ const getReward = async (req, res) => {
         .map((group) => group.trim()),
     }));
 
-    res.status(200).json(transformedData);
+    return res.status(200).json(transformedData);
   } catch (err) {
     console.log(err);
-    res.status(500).send("An error occurred while processing your request.");
+    return res
+      .status(500)
+      .send("An error occurred while processing your request.");
   }
 };
 
@@ -74,10 +79,10 @@ const getRewardById = async (req, res) => {
         .map((group) => group.trim()),
     }));
 
-    res.status(200).json(transformedData[0]);
+    return res.status(200).json(transformedData[0]);
   } catch (err) {
     console.log(err);
-    res.status(500).send("An error occurred while processing your request.");
+    return res.status(500).send("An error occurred while processing your request.");
   }
 };
 
@@ -91,7 +96,7 @@ const getRewardByEventTimeAndCustomerGroup = async (req, res) => {
     return res.status(200).send(results[0]);
   } catch (err) {
     console.log(err);
-    res.status(500).send("An error occurred while processing your request.");
+    return res.status(500).send("An error occurred while processing your request.");
   }
 };
 
@@ -104,6 +109,7 @@ const getRedeemReward = async (req, res) => {
     reward_name, //ใช้แค่ตอนส่ง mail
     bplus_code, //ใช้แค่ตอนส่ง mail
     retailer_name, //ใช้แค่ตอนส่ง mail
+    reward_type,
   } = req.body;
 
   try {
@@ -115,6 +121,25 @@ const getRedeemReward = async (req, res) => {
     const existingUserCount = userExistsResult[0][0].count;
 
     if (existingUserCount > 0) {
+      //handle reward type coupon
+      let coupon = "";
+      if (reward_type === "COUPON") {
+        const [couponCodeItem] = await db.query(rewardQueries.getCouponCode, [
+          reward_id,
+        ]);
+        if (couponCodeItem.length === 0) {
+          return res
+            .status(404)
+            .json({ msg: "คูปองหมด", isRedeemSuccess: false });
+        }
+        const couponStatus = 1; //status 1=activate
+        coupon = couponCodeItem[0].coupon_code;
+        await db.query(rewardQueries.updateCouponStatus, [
+          couponStatus,
+          coupon,
+        ]); // Activate coupon
+      }
+
       // Insert the redeem reward into the database.
       await db.query(rewardQueries.keepRewardToHistory, [
         customer_id,
@@ -125,10 +150,10 @@ const getRedeemReward = async (req, res) => {
 
       // ------------------- Decrease point--------------------------
       db.query(customerQueries.decreasePoint, [points_used, customer_id]);
-      // ------------------- Decrease reward--------------------------
+      // ------------------- Decrease reward-------------------------
       db.query(rewardQueries.decreaseReward, [quantity, reward_id]);
-      //------------get retailer name by customer_id-----------------
 
+      //------------get retailer name by customer_id-----------------
       //------------get timestamp from database before send email----
       const redeem_timestamp_result = await db.query(
         rewardQueries.getRedeemRewardTimestamp,
@@ -154,20 +179,37 @@ const getRedeemReward = async (req, res) => {
 
       //------------------------push line message----------------
       //customer_id ต้องเป็นของ line
+
       await sendLineMessage(customer_id, reward_image, reward_name).then(() => {
         console.log("Line message send successfully");
       });
 
-      res.status(201).json({ msg: "redeem successful", isRedeemSuccess: true });
+      //------------------ Reward with type coupon -------------------
+      if (reward_type === "COUPON") {
+        await sendCouponLineMessage(
+          customer_id,
+          reward_name,
+          reward_image,
+          coupon
+        ).then(() => {
+          console.log("Line message send successfully");
+        });
+      }
+
+      return res
+        .status(201)
+        .json({ msg: "redeem successful", isRedeemSuccess: true });
     } else {
-      res.status(404).json({
+      return res.status(404).json({
         msg: "Redemption Failed: User Not Found",
         isRedeemSuccess: false,
       });
     }
   } catch (err) {
     console.log(err);
-    res.status(500).send("An error occurred while processing your request.");
+    return res
+      .status(500)
+      .send("An error occurred while processing your request.");
   }
 };
 
@@ -180,10 +222,10 @@ const getRemainReward = async (req, res) => {
       [reward_id]
     );
 
-    res.json(checkHasReward.rows[0].reward_id);
+    return res.json(checkHasReward.rows[0].reward_id);
   } catch (err) {
     console.error(err);
-    res
+    return res
       .status(500)
       .send("An error occurred while processing your request." + err);
   }
@@ -248,13 +290,13 @@ const addNewReward = async (req, res) => {
 
     ftpService.uploadImageToHost(filePath, fileName);
     // Handle success
-    res
+    return res
       .status(200)
       .send({ msg: "Add new reward successfully.", isFinish: true });
   } catch (error) {
     // Handle error
     console.error(error);
-    res.status(500).send("Error while add new reward.");
+    return res.status(500).send("Error while add new reward.");
   }
 };
 
@@ -333,7 +375,6 @@ const editRewardDetails = async (req, res) => {
         adminId,
         rewardId,
       ]);
-
       await db.query(rewardQueries.updateRewardDetailsAndImage, [
         rewardName,
         requirePoints,
@@ -343,8 +384,8 @@ const editRewardDetails = async (req, res) => {
         startDate,
         endDate,
         description,
-        fileName,
         rewardType,
+        fileName,
         rewardId,
       ]);
 
@@ -396,29 +437,34 @@ const editRewardDetails = async (req, res) => {
 
 const addNewCouponCode = async (req, res) => {
   const couponList = req.body;
- 
+
   try {
     for (const item of couponList) {
- 
       // Check if the coupon code already exists
-      const [existingCoupon] = await db.query(rewardQueries.checkIsCouponExist, [item.CouponCode]);
+      const [existingCoupon] = await db.query(
+        rewardQueries.checkIsCouponExist,
+        [item.CouponCode]
+      );
 
       if (existingCoupon.length > 0) {
- 
-        return res.status(409).send(`Duplicate coupon code detected: ${item.CouponCode}`);
+        return res
+          .status(409)
+          .send(`Duplicate coupon code detected: ${item.CouponCode}`);
       }
 
       // Add the new coupon code
       await db.query(rewardQueries.addCoupon, [item.CouponCode, item.RewardID]);
     }
 
-    res.status(200).send("Coupon codes added successfully.");
+    return  res.status(200).send("Coupon codes added successfully.");
   } catch (error) {
     console.error("Error adding coupon codes:", error);
-    res.status(500).send({isUploadCSVError: true, csvMsg: "An error occurred while adding coupon codes."});
+    return res.status(500).send({
+      isUploadCSVError: true,
+      csvMsg: "An error occurred while adding coupon codes.",
+    });
   }
 };
-
 
 module.exports = {
   getRedeemReward,
