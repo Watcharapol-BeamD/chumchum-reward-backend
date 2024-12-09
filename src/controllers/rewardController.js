@@ -167,6 +167,13 @@ const getRedeemReward = async (req, res) => {
       ]);
       const reward_image = reward_image_result[0][0].reward_image;
 
+      //---------------------get Doc_Ref(redeem history id) ------------------------
+      const [[redeem_history_id]] = await db.query(rewardQueries.getLastedRedeemHistoryId, [
+        customer_id,
+      ]);
+      //add padStart 6
+      const doc_ref =  redeem_history_id.redeem_history_id.toString().padStart(6, '0')
+ 
       //-----------------------send email-----------------------
 
       await sendEmail(
@@ -174,13 +181,15 @@ const getRedeemReward = async (req, res) => {
         bplus_code,
         reward_name,
         redeem_timestamp,
-        reward_image
+        reward_image,
+        points_used,
+        doc_ref
       );
 
       //------------------------push line message----------------
       //customer_id ต้องเป็นของ line
 
-      await sendLineMessage(customer_id, reward_image, reward_name).then(() => {
+      await sendLineMessage(customer_id, reward_image, reward_name,points_used,doc_ref).then(() => {
         console.log("Line message send successfully");
       });
 

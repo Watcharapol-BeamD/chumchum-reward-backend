@@ -5,7 +5,9 @@ const sendEmail = async (
   bplus_code,
   reward_name,
   timestamp,
-  reward_image
+  reward_image,
+  points_used,
+  doc_ref
 ) => {
   try {
     // const transporter = nodemailer.createTransport({
@@ -147,6 +149,12 @@ const sendEmail = async (
                            </tr>
                            <tr>
                             <td class="es-m-txt-c" align="left" style="padding:0;Margin:0;padding-top:10px;padding-bottom:15px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:24px;color:#333333;font-size:16px">แลกรางวัล: ${reward_name}</p></td>
+                           </tr>
+                           <tr>
+                            <td class="es-m-txt-c" align="left" style="padding:0;Margin:0;padding-top:10px;padding-bottom:15px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:24px;color:#333333;font-size:16px">เลขอ้างอิง: ${doc_ref}</p></td>
+                           </tr>
+                           <tr>
+                            <td class="es-m-txt-c" align="left" style="padding:0;Margin:0;padding-top:10px;padding-bottom:15px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:24px;color:#333333;font-size:16px">จำนวนดาวที่ใช้แลก: ${points_used} ดวง</p></td>
                            </tr>
                            <tr>
                             <td class="es-m-txt-c" align="left" style="padding:0;Margin:0;padding-top:10px;padding-bottom:15px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:24px;color:#333333;font-size:16px">วัน-เวลา : ${timestamp}</p></td>

@@ -48,8 +48,12 @@ const addSaleHistory =
   "INSERT INTO Points_Transactions (doc_date, doc_ref, bill_amount, point_amount, fk_customer_id) VALUES (?, ?, ?, ?, ?)";
 const addCoupon = `INSERT INTO Coupons (coupon_code, fk_reward_id) VALUES (?, ?);`;
 const checkIsCouponExist = "SELECT * FROM Coupons WHERE coupon_code = ?";
-const getCouponCode = "SELECT coupon_code FROM Coupons WHERE fk_reward_id = ? AND is_activate = 0  LIMIT 1;";
-const updateCouponStatus = "UPDATE Coupons SET is_activate = ? WHERE coupon_code = ?;"
+const getCouponCode =
+  "SELECT coupon_code FROM Coupons WHERE fk_reward_id = ? AND is_activate = 0  LIMIT 1;";
+const updateCouponStatus =
+  "UPDATE Coupons SET is_activate = ? WHERE coupon_code = ?;";
+const getLastedRedeemHistoryId =
+  "SELECT redeem_history_id FROM Redeem_Histories WHERE fk_customer_id = ? ORDER BY redeem_timestamp DESC LIMIT 1;";
 
 module.exports = {
   keepRewardToHistory,
@@ -73,5 +77,6 @@ module.exports = {
   addCoupon,
   checkIsCouponExist,
   getCouponCode,
-  updateCouponStatus
+  updateCouponStatus,
+  getLastedRedeemHistoryId,
 };

@@ -1,6 +1,12 @@
 const client = require("./lineUtils");
 
-const sendLineMessage = async (customer_id, reward_image, reward_name) => {
+const sendLineMessage = async (
+  customer_id,
+  reward_image,
+  reward_name,
+  points_used,
+  doc_ref
+) => {
   // Push a Line message to the customer
   await client.pushMessage(customer_id, [
     {
@@ -26,6 +32,25 @@ const sendLineMessage = async (customer_id, reward_image, reward_name) => {
           type: "box",
           layout: "vertical",
           contents: [
+            {
+              type: "text",
+              text: `เลขอ้างอิง: ${doc_ref}`,
+              size: "lg",
+              weight: "bold",
+              color: "#FFFFFF",
+              wrap: true,
+              align: "center",
+              margin: "md",
+            },
+            {
+              type: "text",
+              text: `จำนวนดาวที่ใช้: ${points_used} ดวง`,
+              size: "sm",
+              color: "#FFFFFFCC",
+              wrap: true,
+              align: "center",
+              margin: "md",
+            },
             {
               type: "text",
               text: "แลกรางวัลเสร็จสมบูรณ์ 🎉",
