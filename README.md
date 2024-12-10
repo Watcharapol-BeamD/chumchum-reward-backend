@@ -17,12 +17,13 @@
 
 ### Changelog
 
-#### 1.0.6
+#### 1.1.0
 <!-- - Add Line flex include doc_ref and points_used
   - `POST /api/v1/reward/upload-coupon-list`
 - Basic error handling
 - Add email template include doc_ref and points_used -->
-- Handle duplicate coupon and empty column
+<!-- - Handle duplicate coupon and empty column -->
+- redeem reward endpoint
 
 
 ## Installation
