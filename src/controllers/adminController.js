@@ -45,12 +45,10 @@ const addNewSaleHistory = async (req, res) => {
           customerId,
         ]);
       } else {
-        return res
-          .status(500)
-          .send({
-            isUploadCSVError: true,
-            csvMsg: "Wrong format or not found some customer!",
-          });
+        return res.status(500).send({
+          isUploadCSVError: true,
+          csvMsg: "Wrong format or not found some customer!",
+        });
       }
     }
 
@@ -252,9 +250,22 @@ const getRefreshToken = async (req, res) => {
   }
 };
 
+const getRedeemRewardHistory = async (req, res) => {
+  const [redeemHistory] = await db.query(adminQueries.getRedeemRewardHistory);
+
+  if (redeemHistory.length > 0) {
+    return res.status(200).send(redeemHistory);
+  }
+  
+  return res
+    .status(500)
+    .send({ msg: "An error occurred while processing your request." });
+};
+
 module.exports = {
   getLogin,
   getRefreshToken,
   getResetAdminPassword,
   addNewSaleHistory,
+  getRedeemRewardHistory,
 };

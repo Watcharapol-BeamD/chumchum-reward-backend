@@ -7,6 +7,7 @@ const auth = require('../middleware/auth')
 // router.get('/send_email',rewardController.getSendEmail)
 // router.get('/get_reward',adminController.getReward)
 // router.get('/get_reward_by_id/:reward_id',adminController.getRewardById)
+router.get('/redeem_reward_history',adminController.getRedeemRewardHistory)
 
 //-------------------post request-------------------
 router.post("/login", adminController.getLogin);
