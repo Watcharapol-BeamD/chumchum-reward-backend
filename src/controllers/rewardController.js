@@ -82,7 +82,9 @@ const getRewardById = async (req, res) => {
     return res.status(200).json(transformedData[0]);
   } catch (err) {
     console.log(err);
-    return res.status(500).send("An error occurred while processing your request.");
+    return res
+      .status(500)
+      .send("An error occurred while processing your request.");
   }
 };
 
@@ -96,7 +98,9 @@ const getRewardByEventTimeAndCustomerGroup = async (req, res) => {
     return res.status(200).send(results[0]);
   } catch (err) {
     console.log(err);
-    return res.status(500).send("An error occurred while processing your request.");
+    return res
+      .status(500)
+      .send("An error occurred while processing your request.");
   }
 };
 
@@ -168,12 +172,15 @@ const getRedeemReward = async (req, res) => {
       const reward_image = reward_image_result[0][0].reward_image;
 
       //---------------------get Doc_Ref(redeem history id) ------------------------
-      const [[redeem_history_id]] = await db.query(rewardQueries.getLastedRedeemHistoryId, [
-        customer_id,
-      ]);
+      const [[redeem_history_id]] = await db.query(
+        rewardQueries.getLastedRedeemHistoryId,
+        [customer_id]
+      );
       //add padStart 6
-      const doc_ref =  redeem_history_id.redeem_history_id.toString().padStart(6, '0')
- 
+      const doc_ref = redeem_history_id.redeem_history_id
+        .toString()
+        .padStart(6, "0");
+
       //-----------------------send email-----------------------
 
       await sendEmail(
@@ -189,7 +196,13 @@ const getRedeemReward = async (req, res) => {
       //------------------------push line message----------------
       //customer_id ต้องเป็นของ line
 
-      await sendLineMessage(customer_id, reward_image, reward_name,points_used,doc_ref).then(() => {
+      await sendLineMessage(
+        customer_id,
+        reward_image,
+        reward_name,
+        points_used,
+        doc_ref
+      ).then(() => {
         console.log("Line message send successfully");
       });
 
@@ -446,7 +459,9 @@ const editRewardDetails = async (req, res) => {
 
 const addNewCouponCode = async (req, res) => {
   const couponList = req.body;
-
+  const duplicateCoupons = []; // To collect duplicate coupon codes
+  const insertedCoupons = []; // To collect successfully inserted coupon codes
+  
   try {
     for (const item of couponList) {
       // Check if the coupon code already exists
@@ -456,16 +471,27 @@ const addNewCouponCode = async (req, res) => {
       );
 
       if (existingCoupon.length > 0) {
-        return res
-          .status(409)
-          .send(`Duplicate coupon code detected: ${item.CouponCode}`);
+        // Add to duplicate list
+        duplicateCoupons.push(item.CouponCode);
+        continue; // Skip to the next iteration
       }
 
       // Add the new coupon code
       await db.query(rewardQueries.addCoupon, [item.CouponCode, item.RewardID]);
+      insertedCoupons.push(item.CouponCode);
     }
 
-    return  res.status(200).send("Coupon codes added successfully.");
+    if (duplicateCoupons.length !== 0) {
+      return res.status(409).send({
+        csvMsg: `Duplicate coupon code detected:  `,
+        duplicateCoupons: duplicateCoupons,
+      });
+    } else {
+      return res.status(200).send({
+        csvMsg: "Coupon codes processed successfully.",
+        insertedCoupons,
+      });
+    }
   } catch (error) {
     console.error("Error adding coupon codes:", error);
     return res.status(500).send({
