@@ -461,7 +461,17 @@ const addNewCouponCode = async (req, res) => {
   const couponList = req.body;
   const duplicateCoupons = []; // To collect duplicate coupon codes
   const insertedCoupons = []; // To collect successfully inserted coupon codes
-  
+
+  if (
+    couponList.some((item) => item.RewardID === "" || item.CouponCode === "")
+  ) {
+    return res
+      .status(404)
+      .send({
+        csvMsg: "An empty column was found. Please remove it to proceed.",
+      });
+  }
+
   try {
     for (const item of couponList) {
       // Check if the coupon code already exists
